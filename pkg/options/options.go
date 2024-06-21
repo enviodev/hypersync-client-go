@@ -1,6 +1,9 @@
 package options
 
-import "github.com/enviodev/hypersync-client-go/pkg/utils"
+import (
+	"github.com/enviodev/hypersync-client-go/pkg/utils"
+	"time"
+)
 
 // Options represents the configuration options for network nodes.
 type Options struct {
@@ -32,6 +35,24 @@ type Node struct {
 
 	// Endpoint represents the network endpoint of the node.
 	Endpoint string `mapstructure:"endpoint" yaml:"endpoint" json:"endpoint"`
+
+	// BearerToken is the HyperSync server bearer token.
+	BearerToken *string `mapstructure:"bearerToken" yaml:"bearerToken" json:"bearerToken"`
+
+	// HTTPReqTimeoutMillis is the number of milliseconds to wait for a response before timing out.
+	HTTPReqTimeoutMs *time.Duration `mapstructure:"httpReqTimeoutMs" yaml:"httpReqTimeoutMs" json:"httpReqTimeoutMs"`
+
+	// MaxNumRetries is the number of retries to attempt before returning an error.
+	MaxNumRetries *int `mapstructure:"maxNumRetries" yaml:"maxNumRetries" json:"maxNumRetries"`
+
+	// RetryBackoffMs is the number of milliseconds used for retry backoff increasing.
+	RetryBackoffMs *time.Duration `mapstructure:"retryBackoffMs" yaml:"retryBackoffMs" json:"retryBackoffMs"`
+
+	// RetryBaseMs is the initial wait time for request backoff.
+	RetryBaseMs *time.Duration `mapstructure:"retryBaseMs" yaml:"retryBaseMs" json:"retryBaseMs"`
+
+	// RetryCeilingMs is the ceiling time for request backoff.
+	RetryCeilingMs *time.Duration `mapstructure:"retryCeilingMs" yaml:"retryCeilingMs" json:"retryCeilingMs"`
 }
 
 // GetType returns the type of the node.
