@@ -16,11 +16,11 @@ import (
 
 type Client struct {
 	ctx    context.Context
-	opts   *options.Options
+	opts   options.Options
 	client *http.Client
 }
 
-func NewClient(ctx context.Context, opts *options.Options) (*Client, error) {
+func NewClient(ctx context.Context, opts options.Options) (*Client, error) {
 	client := &http.Client{
 		Timeout: 2 * time.Minute,
 		Transport: &http.Transport{
