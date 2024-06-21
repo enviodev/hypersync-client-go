@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/enviodev/hypersync-client-go/pkg/options"
 	"github.com/enviodev/hypersync-client-go/pkg/utils"
 	"github.com/pkg/errors"
 	"io"
@@ -15,11 +16,11 @@ import (
 
 type Client struct {
 	ctx    context.Context
-	opts   *Options
+	opts   *options.Options
 	client *http.Client
 }
 
-func NewClient(ctx context.Context, opts *Options) (*Client, error) {
+func NewClient(ctx context.Context, opts *options.Options) (*Client, error) {
 	client := &http.Client{
 		Timeout: 2 * time.Minute,
 		Transport: &http.Transport{
@@ -40,7 +41,7 @@ func NewClient(ctx context.Context, opts *Options) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) GetQueryUrlFromNode(node Node) string {
+func (c *Client) GetQueryUrlFromNode(node options.Node) string {
 	return strings.Join([]string{node.Endpoint, "query"}, "/")
 }
 

@@ -1,4 +1,4 @@
-package hypersyncgo
+package options
 
 import "github.com/enviodev/hypersync-client-go/pkg/utils"
 
@@ -15,7 +15,7 @@ func (o *Options) GetBlockchains() []Node {
 
 func (o *Options) GetNodeByNetworkId(networkId utils.NetworkID) (*Node, bool) {
 	for _, node := range o.Blockchains {
-		if node.NetworkId == int(networkId.Uint64()) {
+		if node.NetworkId == networkId {
 			return &node, true
 		}
 	}
@@ -24,26 +24,18 @@ func (o *Options) GetNodeByNetworkId(networkId utils.NetworkID) (*Node, bool) {
 
 // Node represents the configuration and details of a network node.
 type Node struct {
-	// Group represents the group name of the node.
-	Group string `mapstructure:"group" yaml:"group" json:"group"`
-
 	// Type represents the type of the node.
-	Type string `mapstructure:"type" yaml:"type" json:"type"`
+	Type utils.Network `mapstructure:"type" yaml:"type" json:"type"`
 
 	// NetworkId represents the network ID of the node.
-	NetworkId int `mapstructure:"networkId" yaml:"networkId" json:"networkId"`
+	NetworkId utils.NetworkID `mapstructure:"networkId" yaml:"networkId" json:"networkId"`
 
 	// Endpoint represents the network endpoint of the node.
 	Endpoint string `mapstructure:"endpoint" yaml:"endpoint" json:"endpoint"`
 }
 
-// GetGroup returns the group name of the node.
-func (n *Node) GetGroup() string {
-	return n.Group
-}
-
 // GetType returns the type of the node.
-func (n *Node) GetType() string {
+func (n *Node) GetType() utils.Network {
 	return n.Type
 }
 
