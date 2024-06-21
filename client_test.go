@@ -41,7 +41,7 @@ func TestClients(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, client)
 
-			height, err := client.GetHeight(ctx)
+			height, err := client.GetHeight(ctx, utils.EthereumNetworkID)
 			require.NoError(t, err)
 			t.Logf("Discovered current height: %d", height)
 			require.Greater(t, height, uint64(0))
