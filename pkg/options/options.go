@@ -43,16 +43,16 @@ type Node struct {
 	HTTPReqTimeoutMs *time.Duration `mapstructure:"httpReqTimeoutMs" yaml:"httpReqTimeoutMs" json:"httpReqTimeoutMs"`
 
 	// MaxNumRetries is the number of retries to attempt before returning an error.
-	MaxNumRetries *int `mapstructure:"maxNumRetries" yaml:"maxNumRetries" json:"maxNumRetries"`
+	MaxNumRetries int `mapstructure:"maxNumRetries" yaml:"maxNumRetries" json:"maxNumRetries" default:"12"`
 
 	// RetryBackoffMs is the number of milliseconds used for retry backoff increasing.
-	RetryBackoffMs *time.Duration `mapstructure:"retryBackoffMs" yaml:"retryBackoffMs" json:"retryBackoffMs"`
+	RetryBackoffMs time.Duration `mapstructure:"retryBackoffMs" yaml:"retryBackoffMs" json:"retryBackoffMs"`
 
 	// RetryBaseMs is the initial wait time for request backoff.
-	RetryBaseMs *time.Duration `mapstructure:"retryBaseMs" yaml:"retryBaseMs" json:"retryBaseMs"`
+	RetryBaseMs time.Duration `mapstructure:"retryBaseMs" yaml:"retryBaseMs" json:"retryBaseMs"`
 
 	// RetryCeilingMs is the ceiling time for request backoff.
-	RetryCeilingMs *time.Duration `mapstructure:"retryCeilingMs" yaml:"retryCeilingMs" json:"retryCeilingMs"`
+	RetryCeilingMs time.Duration `mapstructure:"retryCeilingMs" yaml:"retryCeilingMs" json:"retryCeilingMs"`
 }
 
 // GetType returns the type of the node.

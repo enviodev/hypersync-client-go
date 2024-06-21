@@ -1,12 +1,6 @@
 package stream
 
-import (
-	"context"
-	"math/big"
-	"sync"
-)
-
-type Subscriber struct {
+/*type Subscriber struct {
 	ctx              context.Context
 	client           *Client
 	startBlockNumber *big.Int
@@ -40,3 +34,4 @@ func (s *Subscriber) UnSubscribe() error {
 func (s *Subscriber) Ch() <-chan *Block {
 	return s.ch
 }
+*/

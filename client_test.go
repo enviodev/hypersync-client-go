@@ -35,9 +35,16 @@ func TestClients(t *testing.T) {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 
-			client, err := NewClient(ctx, testCase.opts)
+			// Fetch the first node out of the blockchain definitions
+			nodeOpts := testCase.opts.Blockchains[0]
+			client, err := NewClient(ctx, nodeOpts.NetworkId, testCase.opts)
 			require.NoError(t, err)
 			require.NotNil(t, client)
+
+			height, err := client.GetHeight(ctx)
+			require.NoError(t, err)
+			t.Logf("Discovered current height: %d", height)
+			require.Greater(t, height, uint64(0))
 		})
 	}
 }

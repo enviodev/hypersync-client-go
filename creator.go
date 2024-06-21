@@ -51,7 +51,7 @@ func (c *Client) GetContractCreator(ctx context.Context, networkId utils.Network
 		},
 	}
 
-	response, err := Do[ContractCreatorRequest, Response](ctx, c, http.MethodPost, networkId, request)
+	response, err := DoQuery[ContractCreatorRequest, Response](ctx, c, http.MethodPost, networkId, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get contract creator from envio")
 	}
