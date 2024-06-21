@@ -1,4 +1,4 @@
-package hypersyncgo
+package client
 
 import (
 	"github.com/ethereum/go-ethereum/common"

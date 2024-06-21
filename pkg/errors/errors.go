@@ -1,4 +1,4 @@
-package hypersyncgo
+package errorshs
 
 import "errors"
 

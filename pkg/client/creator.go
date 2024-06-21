@@ -1,8 +1,8 @@
-package hypersyncgo
+package client
 
 import (
 	"context"
-	"github.com/enviodev/hypersync-client-go/pkg/utils"
+	errorshs "github.com/enviodev/hypersync-client-go/pkg/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"net/http"
@@ -38,7 +38,7 @@ type ContractCreatorRequest struct {
 // Returns:
 // - *Transaction: The transaction details of the contract creator, if found.
 // - error: An error if the request fails or the contract is not found.
-func (c *Client) GetContractCreator(ctx context.Context, networkId utils.NetworkID, addr common.Address) (*Transaction, error) {
+func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*Transaction, error) {
 	request := ContractCreatorRequest{
 		FromBlock: 0,
 		Transactions: []ContractCreatorTransaction{
@@ -51,13 +51,13 @@ func (c *Client) GetContractCreator(ctx context.Context, networkId utils.Network
 		},
 	}
 
-	response, err := DoQuery[ContractCreatorRequest, Response](ctx, c, http.MethodPost, networkId, request)
+	response, err := DoQuery[ContractCreatorRequest, Response](ctx, c, http.MethodPost, request)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get contract creator from envio")
 	}
 
 	if len(response.Data) == 0 {
-		return nil, ErrContractNotFound
+		return nil, errorshs.ErrContractNotFound
 	}
 
 	return response.Data[0].Transactions[0], nil

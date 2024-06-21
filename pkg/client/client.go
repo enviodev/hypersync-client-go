@@ -1,11 +1,10 @@
-package hypersyncgo
+package client
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/enviodev/hypersync-client-go/pkg/options"
-	"github.com/enviodev/hypersync-client-go/pkg/utils"
 	"github.com/pkg/errors"
 	"io"
 	"net"
@@ -15,22 +14,15 @@ import (
 )
 
 type Client struct {
-	ctx      context.Context
-	opts     options.Options
-	nodeOpts options.Node
-	client   *http.Client
+	ctx    context.Context
+	opts   options.Node
+	client *http.Client
 }
 
-func NewClient(ctx context.Context, networkId utils.NetworkID, opts options.Options) (*Client, error) {
-	nodeOpts, found := opts.GetNodeByNetworkId(networkId)
-	if !found {
-		return nil, errors.Errorf("failure to create hypersync client - network id %s not found", networkId)
-	}
-
+func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 	return &Client{
-		ctx:      ctx,
-		opts:     opts,
-		nodeOpts: *nodeOpts,
+		ctx:  ctx,
+		opts: opts,
 		client: &http.Client{
 			Timeout: 2 * time.Minute,
 			Transport: &http.Transport{
@@ -55,13 +47,8 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path string) string {
 	return strings.Join([]string{node.Endpoint, path}, "/")
 }
 
-func DoQuery[R any, T any](ctx context.Context, c *Client, method string, networkId utils.NetworkID, payload R) (*T, error) {
-	node, nodeFound := c.opts.GetNodeByNetworkId(networkId)
-	if !nodeFound {
-		return nil, fmt.Errorf("requested envio network not found: networkId: %s", networkId)
-	}
-
-	nodeUrl := c.GetQueryUrlFromNode(*node)
+func DoQuery[R any, T any](ctx context.Context, c *Client, method string, payload R) (*T, error) {
+	nodeUrl := c.GetQueryUrlFromNode(c.opts)
 
 	reqPayload, err := json.Marshal(payload)
 	if err != nil {

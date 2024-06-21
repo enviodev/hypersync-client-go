@@ -1,4 +1,4 @@
-package hypersyncgo
+package client
 
 import (
 	"context"
@@ -37,11 +37,11 @@ func TestClients(t *testing.T) {
 
 			// Fetch the first node out of the blockchain definitions
 			nodeOpts := testCase.opts.Blockchains[0]
-			client, err := NewClient(ctx, nodeOpts.NetworkId, testCase.opts)
+			client, err := NewClient(ctx, nodeOpts)
 			require.NoError(t, err)
 			require.NotNil(t, client)
 
-			height, err := client.GetHeight(ctx, utils.EthereumNetworkID)
+			height, err := client.GetHeight(ctx)
 			require.NoError(t, err)
 			t.Logf("Discovered current height: %d", height)
 			require.Greater(t, height, uint64(0))
