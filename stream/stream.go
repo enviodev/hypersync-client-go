@@ -1,4 +1,4 @@
-package hypersyncgo
+package stream
 
 import (
 	"context"
