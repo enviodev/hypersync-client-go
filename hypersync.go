@@ -2,6 +2,7 @@ package hypersyncgo
 
 import (
 	"context"
+	"fmt"
 	"github.com/enviodev/hypersync-client-go/pkg/client"
 	"github.com/enviodev/hypersync-client-go/pkg/options"
 	"github.com/enviodev/hypersync-client-go/pkg/utils"
@@ -38,13 +39,21 @@ func NewHyperSync(ctx context.Context, opts options.Options) (*HyperSync, error)
 	}
 
 	return &HyperSync{
-		ctx:  ctx,
-		opts: opts,
-		mu:   mu,
+		ctx:     ctx,
+		opts:    opts,
+		mu:      mu,
+		clients: clientMap,
 	}, nil
 }
 
+func (h *HyperSync) GetClients() map[utils.NetworkID]*client.Client {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	return h.clients
+}
+
 func (h *HyperSync) GetClient(networkId utils.NetworkID) (*client.Client, bool) {
+	fmt.Println(h.clients)
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	c, ok := h.clients[networkId]

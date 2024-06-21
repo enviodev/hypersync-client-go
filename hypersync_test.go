@@ -13,6 +13,7 @@ func TestClients(t *testing.T) {
 	testCases := []struct {
 		name      string
 		opts      options.Options
+		networkId utils.NetworkID
 		addresses []common.Address
 	}{{
 		name: "Test Ethereum Client",
@@ -25,6 +26,7 @@ func TestClients(t *testing.T) {
 				},
 			},
 		},
+		networkId: utils.EthereumNetworkID,
 		addresses: []common.Address{
 			common.HexToAddress("0xdAC17F958D2ee523a2206206994597C13D831ec7"),
 		},
@@ -37,11 +39,11 @@ func TestClients(t *testing.T) {
 
 			hsClient, err := NewHyperSync(ctx, testCase.opts)
 			require.NoError(t, err)
-			require.NotNil(t, client)
+			require.NotNil(t, hsClient)
 
-			client, err := hsClient.GetClient(utils.EthereumNetworkID)
+			client, found := hsClient.GetClient(testCase.networkId)
 			require.NoError(t, err)
-			require.NotNil(t, client)
+			require.True(t, found)
 
 			height, err := client.GetHeight(ctx)
 			require.NoError(t, err)
