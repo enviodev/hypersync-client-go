@@ -11,6 +11,10 @@ type Options struct {
 	Blockchains []Node `mapstructure:"blockchains" yaml:"blockchains" json:"blockchains"`
 }
 
+func (o *Options) Validate() error {
+	return nil
+}
+
 // GetBlockchains returns the slice of network blockchains nodes from the Options.
 func (o *Options) GetBlockchains() []Node {
 	return o.Blockchains
