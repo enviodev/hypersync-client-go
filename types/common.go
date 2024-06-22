@@ -5,6 +5,14 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+type DataType uint8
+
+const (
+	BlocksDataType DataType = iota
+	TransactionsDataType
+	// You can add more DataTypes here
+)
+
 type SigHash [4]byte
 type Address string
 type Hash string

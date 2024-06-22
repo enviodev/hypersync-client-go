@@ -17,7 +17,7 @@ type Query struct {
 
 // QueryResponse represents the query response from hypersync instance.
 // Contain next_block field in case query didn't process all the block range
-type QueryResponse[T any] struct {
+type QueryResponse struct {
 	// Current height of the source hypersync instance
 	ArchiveHeight *int64 `json:"archive_height"`
 	// Next block to query for, the responses are paginated so
@@ -27,7 +27,35 @@ type QueryResponse[T any] struct {
 	// Total time it took the hypersync instance to execute the query.
 	TotalExecutionTime uint64 `json:"total_execution_time"`
 	// Response data
-	Data T `json:"data"`
+	Data DataResponse `json:"data"`
 	// Rollback guard
 	RollbackGuard *RollbackGuard `json:"rollback_guard"`
+}
+
+func (qr *QueryResponse) GetData() DataResponse {
+	return qr.Data
+}
+
+func (qr *QueryResponse) AppendBlockData(data Block) {
+	qr.Data.Blocks = append(qr.Data.Blocks, data)
+}
+
+func (qr *QueryResponse) AppendTransactionData(data Transaction) {
+	qr.Data.Transactions = append(qr.Data.Transactions, data)
+}
+
+func (qr *QueryResponse) SetArchiveHeight(height *int64) {
+	qr.ArchiveHeight = height
+}
+
+func (qr *QueryResponse) SetNextBlock(block uint64) {
+	qr.NextBlock = block
+}
+
+func (qr *QueryResponse) SetTotalExecutionTime(tet uint64) {
+	qr.TotalExecutionTime = tet
+}
+
+func (qr *QueryResponse) SetRollbackGuard(rg *RollbackGuard) {
+	qr.RollbackGuard = rg
 }

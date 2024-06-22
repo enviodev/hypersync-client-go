@@ -50,7 +50,7 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string 
 	return strings.Join(paths, "/")
 }
 
-func (c *Client) Get(ctx context.Context, query *types.Query) (*types.QueryResponse[[]types.DataResponse], error) {
+func (c *Client) Get(ctx context.Context, query *types.Query) (*types.QueryResponse, error) {
 	return c.GetArrow(ctx, query)
 }
 
@@ -130,7 +130,7 @@ func Do[R any, T any](ctx context.Context, c *Client, url string, method string,
 	return &result, nil
 }
 
-func DoArrow[R any, T types.QueryResponse[[]types.DataResponse]](ctx context.Context, c *Client, url string, method string, payload R) (*T, error) {
+func DoArrow[R any](ctx context.Context, c *Client, url string, method string, payload R) (*types.QueryResponse, error) {
 	reqPayload, err := json.Marshal(payload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
@@ -154,10 +154,10 @@ func DoArrow[R any, T types.QueryResponse[[]types.DataResponse]](ctx context.Con
 		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(responseData))
 	}
 
-	arrowReader, err := arrowhs.NewReader[T](resp.Body)
+	arrowReader, err := arrowhs.NewQueryResponseReader(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not parse the ipc/arrow response while attempting to read")
 	}
 
-	return arrowReader.ResponsePtr(), nil
+	return arrowReader.GetQueryResponse(), nil
 }

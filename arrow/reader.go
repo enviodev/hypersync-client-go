@@ -13,15 +13,21 @@ import (
 	"io"
 )
 
-type Reader[T any] struct {
+type Reader struct {
 	reader            io.Reader
 	rootQueryResponse hypersynccapnp.QueryResponse
-	response          T
+	response          QueryResponseInterface
 }
 
-func NewReader[T types.QueryResponse[[]types.DataResponse]](bReader io.ReadCloser) (*Reader[T], error) {
-	toReturn := &Reader[T]{
-		reader: bReader,
+func NewQueryResponseReader(bReader io.ReadCloser) (*Reader, error) {
+	queryResponse := &types.QueryResponse{Data: types.DataResponse{}}
+	return NewReader(bReader, queryResponse)
+}
+
+func NewReader(bReader io.ReadCloser, response QueryResponseInterface) (*Reader, error) {
+	toReturn := &Reader{
+		reader:   bReader,
+		response: response,
 	}
 
 	decoder := capnp.NewPackedDecoder(bReader)
@@ -41,8 +47,10 @@ func NewReader[T types.QueryResponse[[]types.DataResponse]](bReader io.ReadClose
 		h := queryResponse.ArchiveHeight()
 		archiveHeight = &h
 	}
+	toReturn.response.SetArchiveHeight(archiveHeight)
+	toReturn.response.SetNextBlock(queryResponse.NextBlock())
+	toReturn.response.SetTotalExecutionTime(queryResponse.TotalExecutionTime())
 
-	var rollbackGuard *types.RollbackGuard
 	if queryResponse.HasRollbackGuard() {
 		rg, rgErr := queryResponse.RollbackGuard()
 		if rgErr != nil {
@@ -59,21 +67,14 @@ func NewReader[T types.QueryResponse[[]types.DataResponse]](bReader io.ReadClose
 			return nil, errors.Wrap(fphErr, "failed to get rollback guard first parent hash")
 		}
 
-		rollbackGuard = &types.RollbackGuard{
+		rollbackGuard := &types.RollbackGuard{
 			BlockNumber:      rg.BlockNumber(),
 			Timestamp:        rg.Timestamp(),
 			Hash:             common.BytesToHash(hash),
 			FirstBlockNumber: rg.FirstBlockNumber(),
 			FirstParentHash:  common.BytesToHash(firstParentHash),
 		}
-	}
-
-	toReturn.response = T{
-		ArchiveHeight:      archiveHeight,
-		NextBlock:          queryResponse.NextBlock(),
-		TotalExecutionTime: queryResponse.TotalExecutionTime(),
-		Data:               make([]types.DataResponse, 0),
-		RollbackGuard:      rollbackGuard,
+		toReturn.response.SetRollbackGuard(rollbackGuard)
 	}
 
 	if pdErr := toReturn.processData(); pdErr != nil {
@@ -83,19 +84,15 @@ func NewReader[T types.QueryResponse[[]types.DataResponse]](bReader io.ReadClose
 	return toReturn, nil
 }
 
-func (r *Reader[T]) GetRootQueryResponse() hypersynccapnp.QueryResponse {
+func (r *Reader) GetRootQueryResponse() hypersynccapnp.QueryResponse {
 	return r.rootQueryResponse
 }
 
-func (r *Reader[T]) Response() T {
-	return r.response
+func (r *Reader) GetQueryResponse() *types.QueryResponse {
+	return r.response.(*types.QueryResponse)
 }
 
-func (r *Reader[T]) ResponsePtr() *T {
-	return &r.response
-}
-
-func (r *Reader[T]) processData() error {
+func (r *Reader) processData() error {
 	dataPtr, dpErr := r.rootQueryResponse.Data()
 	if dpErr != nil {
 		return errors.Wrap(dpErr, "failed to read query response data")
@@ -107,7 +104,7 @@ func (r *Reader[T]) processData() error {
 			return errors.Wrap(bErr, "failed to parse block data")
 		}
 
-		if bdErr := r.readChunks(blocks); bdErr != nil {
+		if bdErr := r.readChunks(blocks, types.BlocksDataType); bdErr != nil {
 			return errors.Wrap(bdErr, "failed to read chunks from blocks data")
 		}
 	}
@@ -118,7 +115,7 @@ func (r *Reader[T]) processData() error {
 			return errors.Wrap(bErr, "failed to parse transactions data")
 		}
 
-		if bdErr := r.readChunks(blocks); bdErr != nil {
+		if bdErr := r.readChunks(blocks, types.TransactionsDataType); bdErr != nil {
 			return errors.Wrap(bdErr, "failed to read chunks from transactions data")
 		}
 	}
@@ -126,7 +123,7 @@ func (r *Reader[T]) processData() error {
 	return nil
 }
 
-func (r *Reader[T]) readChunks(data []byte) error {
+func (r *Reader) readChunks(data []byte, dt types.DataType) error {
 	if len(data) < 16 { // Minimum length for a valid Arrow IPC message + Polaris Arrow
 		return errors.New("data length is too short to be a valid Arrow IPC message")
 	}
@@ -147,7 +144,7 @@ func (r *Reader[T]) readChunks(data []byte) error {
 
 		fmt.Println("readChunks - Record NumCols:", rec.NumCols())
 
-		if pbErr := r.processBatch(rec, rSchema); pbErr != nil {
+		if pbErr := r.processRecord(rec, rSchema, dt); pbErr != nil {
 			return errors.Wrap(pbErr, "failed to process batch")
 		}
 
@@ -160,11 +157,20 @@ func (r *Reader[T]) readChunks(data []byte) error {
 	return nil
 }
 
-func (r *Reader[T]) processBatch(record arrow.Record, schema *arrow.Schema) error {
-	fmt.Println("Process batch columns:", record.NumCols())
+func (r *Reader) processRecord(record arrow.Record, schema *arrow.Schema, dt types.DataType) error {
+	fmt.Println("Process batch record columns:", record.NumCols())
+
+	switch dt {
+	case types.BlocksDataType:
+		r.response.AppendBlockData(types.Block{})
+	case types.TransactionsDataType:
+		r.response.AppendTransactionData(types.Transaction{})
+	default:
+		return fmt.Errorf("unsupported data type %v", dt)
+	}
 	return nil
 }
 
-func (r *Reader[T]) Close() error {
+func (r *Reader) Close() error {
 	return nil
 }

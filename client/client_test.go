@@ -65,6 +65,8 @@ func TestClients(t *testing.T) {
 				resp, rErr := client.Get(ctx, q)
 				require.NoError(t, rErr)
 				require.NotNil(t, resp)
+
+				utils.DumpNodeNoExit(resp)
 			}
 
 		})
