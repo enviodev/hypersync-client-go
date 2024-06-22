@@ -1,7 +1,7 @@
 package options
 
 import (
-	"github.com/enviodev/hypersync-client-go/pkg/utils"
+	"github.com/enviodev/hypersync-client-go/utils"
 	"time"
 )
 

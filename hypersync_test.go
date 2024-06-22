@@ -2,8 +2,8 @@ package hypersyncgo
 
 import (
 	"context"
-	"github.com/enviodev/hypersync-client-go/pkg/options"
-	"github.com/enviodev/hypersync-client-go/pkg/utils"
+	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"testing"

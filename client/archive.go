@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/enviodev/hypersync-client-go/pkg/types"
+	"github.com/enviodev/hypersync-client-go/types"
 	"math/rand"
 	"net/http"
 	"time"

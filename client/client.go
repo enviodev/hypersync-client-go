@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/enviodev/hypersync-client-go/pkg/options"
+	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/pkg/errors"
 	"io"
 	"net"

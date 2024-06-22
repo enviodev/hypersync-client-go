@@ -3,9 +3,9 @@ package hypersyncgo
 import (
 	"context"
 	"fmt"
-	"github.com/enviodev/hypersync-client-go/pkg/client"
-	"github.com/enviodev/hypersync-client-go/pkg/options"
-	"github.com/enviodev/hypersync-client-go/pkg/utils"
+	"github.com/enviodev/hypersync-client-go/client"
+	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/pkg/errors"
 	"sync"
 )

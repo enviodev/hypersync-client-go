@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	errorshs "github.com/enviodev/hypersync-client-go/pkg/errors"
+	errorshs "github.com/enviodev/hypersync-client-go/errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"net/http"
