@@ -4,14 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
+	arrowhs "github.com/enviodev/hypersync-client-go/arrow"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/pkg/errors"
 	"io"
 	"net"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 )
@@ -51,7 +50,7 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string 
 	return strings.Join(paths, "/")
 }
 
-func (c *Client) Get(ctx context.Context, query *types.Query) (*types.QueryResponse[any], error) {
+func (c *Client) Get(ctx context.Context, query *types.Query) (*types.QueryResponse[[]types.DataResponse], error) {
 	return c.GetArrow(ctx, query)
 }
 
@@ -131,7 +130,7 @@ func Do[R any, T any](ctx context.Context, c *Client, url string, method string,
 	return &result, nil
 }
 
-func DoArrow[R any, T any](ctx context.Context, c *Client, url string, method string, payload R) (*T, error) {
+func DoArrow[R any, T types.QueryResponse[[]types.DataResponse]](ctx context.Context, c *Client, url string, method string, payload R) (*T, error) {
 	reqPayload, err := json.Marshal(payload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
@@ -155,13 +154,12 @@ func DoArrow[R any, T any](ctx context.Context, c *Client, url string, method st
 		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(responseData))
 	}
 
-	response, err := parseQueryResponse(resp.Body)
+	defer resp.Body.Close()
+
+	arrowReader, err := arrowhs.NewReader[T](resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "could not parse the ipc/arrow response while attempting to read")
 	}
 
-	spew.Dump(response)
-	os.Exit(1)
-
-	return nil, nil
+	return arrowReader.ResponsePtr(), nil
 }

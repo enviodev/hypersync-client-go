@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.QueryResponse[interface{}], error) {
+func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.QueryResponse[[]types.DataResponse], error) {
 	base := c.opts.RetryBaseMs
 
 	c.opts.RetryBackoffMs = time.Duration(100)
 	c.opts.MaxNumRetries = 0
 
 	for i := 0; i < c.opts.MaxNumRetries+1; i++ {
-		response, err := DoArrow[*types.Query, types.QueryResponse[interface{}]](ctx, c, c.GeUrlFromNodeAndPath(c.opts, "query", "arrow-ipc"), http.MethodPost, query)
+		response, err := DoArrow[*types.Query, types.QueryResponse[[]types.DataResponse]](ctx, c, c.GeUrlFromNodeAndPath(c.opts, "query", "arrow-ipc"), http.MethodPost, query)
 		if err == nil {
 			return response, nil
 		}
