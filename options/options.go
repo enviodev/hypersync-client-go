@@ -50,7 +50,7 @@ type Node struct {
 	MaxNumRetries int `mapstructure:"maxNumRetries" yaml:"maxNumRetries" json:"maxNumRetries" default:"12"`
 
 	// RetryBackoffMs is the number of milliseconds used for retry backoff increasing.
-	RetryBackoffMs time.Duration `mapstructure:"retryBackoffMs" yaml:"retryBackoffMs" json:"retryBackoffMs"`
+	RetryBackoffMs time.Duration `mapstructure:"retryBackoffMs" yaml:"retryBackoffMs" json:"retryBackoffMs" default:"1ms"`
 
 	// RetryBaseMs is the initial wait time for request backoff.
 	RetryBaseMs time.Duration `mapstructure:"retryBaseMs" yaml:"retryBaseMs" json:"retryBaseMs"`

@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/pkg/errors"
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -43,8 +46,13 @@ func (c *Client) GetQueryUrlFromNode(node options.Node) string {
 	return strings.Join([]string{node.Endpoint, "query"}, "/")
 }
 
-func (c *Client) GeUrlFromNodeAndPath(node options.Node, path string) string {
-	return strings.Join([]string{node.Endpoint, path}, "/")
+func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string {
+	paths := append([]string{node.Endpoint}, path...)
+	return strings.Join(paths, "/")
+}
+
+func (c *Client) Get(ctx context.Context, query *types.Query) (*types.QueryResponse[any], error) {
+	return c.GetArrow(ctx, query)
 }
 
 func DoQuery[R any, T any](ctx context.Context, c *Client, method string, payload R) (*T, error) {
@@ -121,4 +129,39 @@ func Do[R any, T any](ctx context.Context, c *Client, url string, method string,
 	}
 
 	return &result, nil
+}
+
+func DoArrow[R any, T any](ctx context.Context, c *Client, url string, method string, payload R) (*T, error) {
+	reqPayload, err := json.Marshal(payload)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal envio payload")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create new request")
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to perform request")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		responseData, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(responseData))
+	}
+
+	response, err := parseQueryResponse(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	spew.Dump(response)
+	os.Exit(1)
+
+	return nil, nil
 }

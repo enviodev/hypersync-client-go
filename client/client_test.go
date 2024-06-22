@@ -3,17 +3,19 @@ package client
 import (
 	"context"
 	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/enviodev/hypersync-client-go/utils"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestClients(t *testing.T) {
+	//toBlock := uint64(10000001)
+
 	testCases := []struct {
-		name      string
-		opts      options.Options
-		addresses []common.Address
+		name    string
+		opts    options.Options
+		queries []*types.Query
 	}{{
 		name: "Test Ethereum Client",
 		opts: options.Options{
@@ -25,8 +27,21 @@ func TestClients(t *testing.T) {
 				},
 			},
 		},
-		addresses: []common.Address{
-			common.HexToAddress("0xdAC17F958D2ee523a2206206994597C13D831ec7"),
+		queries: []*types.Query{
+			{
+				FromBlock: 10000000,
+				Transactions: []types.TransactionSelection{
+					{
+						ContractAddress: []types.Address{
+							"0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+						},
+					},
+				},
+				FieldSelection: types.FieldSelection{
+					Block:       []string{"number", "hash"},
+					Transaction: []string{"hash", "block_number"},
+				},
+			},
 		},
 	}}
 
@@ -45,6 +60,13 @@ func TestClients(t *testing.T) {
 			require.NoError(t, err)
 			t.Logf("Discovered current height: %d", height)
 			require.Greater(t, height, uint64(0))
+
+			for _, q := range testCase.queries {
+				resp, rErr := client.Get(ctx, q)
+				require.NoError(t, rErr)
+				require.NotNil(t, resp)
+			}
+
 		})
 	}
 }

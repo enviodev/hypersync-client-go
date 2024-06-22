@@ -1,5 +1,5 @@
 using Go = import "/go.capnp";
-$Go.package("books");
+$Go.package("hypersynccapnp");
 $Go.import("foo/books");
 
 @0x9289a56a18f880c5;
