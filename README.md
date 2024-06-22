@@ -16,8 +16,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/enviodev/hypersync-client-go"
-	"github.com/enviodev/hypersync-client-go/pkg/options"
-	"github.com/enviodev/hypersync-client-go/pkg/utils"
+	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/utils"
 )
 
 func main() {
