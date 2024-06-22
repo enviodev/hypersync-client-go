@@ -154,8 +154,6 @@ func DoArrow[R any, T types.QueryResponse[[]types.DataResponse]](ctx context.Con
 		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(responseData))
 	}
 
-	defer resp.Body.Close()
-
 	arrowReader, err := arrowhs.NewReader[T](resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not parse the ipc/arrow response while attempting to read")
