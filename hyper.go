@@ -2,6 +2,7 @@ package hypersyncgo
 
 import (
 	"context"
+	"github.com/enviodev/hypersync-client-go/logger"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/pkg/errors"
@@ -22,8 +23,14 @@ type Hyper struct {
 // Returns an error if the options are invalid or if a client for any network cannot be created.
 func NewHyper(ctx context.Context, opts options.Options) (*Hyper, error) {
 	if err := opts.Validate(); err != nil {
-		return nil, errors.Wrap(err, "invalid options to hypersync client")
+		return nil, errors.Wrap(err, "invalid options to hyper client")
 	}
+
+	zLog, err := logger.GetZapLogger("development", opts.LogLevel.String())
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to initialize zap logger")
+	}
+	logger.SetGlobalLogger(zLog)
 
 	mu := &sync.RWMutex{}
 	clientMap := make(map[utils.NetworkID]*Client)

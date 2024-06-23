@@ -2,11 +2,14 @@ package options
 
 import (
 	"github.com/enviodev/hypersync-client-go/utils"
+	"go.uber.org/zap/zapcore"
 	"time"
 )
 
 // Options represents the configuration options for network nodes.
 type Options struct {
+	// LogLevel ...
+	LogLevel zapcore.Level `json:"logLevel"`
 	// Nodes is a slice of Node representing the network nodes.
 	Blockchains []Node `mapstructure:"blockchains" yaml:"blockchains" json:"blockchains"`
 }
