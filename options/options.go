@@ -40,6 +40,9 @@ type Node struct {
 	// Endpoint represents the network endpoint of the node.
 	Endpoint string `mapstructure:"endpoint" yaml:"endpoint" json:"endpoint"`
 
+	// RpcEndpoint ...
+	RpcEndpoint string `mapstructure:"rpcEndpoint" yaml:"rpcEndpoint" json:"rpcEndpoint"`
+
 	// BearerToken is the HyperSync server bearer token.
 	BearerToken *string `mapstructure:"bearerToken" yaml:"bearerToken" json:"bearerToken"`
 

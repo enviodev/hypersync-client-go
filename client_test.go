@@ -22,9 +22,10 @@ func TestClients(t *testing.T) {
 		opts: options.Options{
 			Blockchains: []options.Node{
 				{
-					Type:      utils.EthereumNetwork,
-					NetworkId: utils.EthereumNetworkID,
-					Endpoint:  "https://eth.hypersync.xyz",
+					Type:        utils.EthereumNetwork,
+					NetworkId:   utils.EthereumNetworkID,
+					Endpoint:    "https://eth.hypersync.xyz",
+					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
 				},
 			},
 		},

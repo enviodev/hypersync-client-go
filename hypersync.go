@@ -9,8 +9,8 @@ import (
 	"sync"
 )
 
-// HyperSync manages a collection of blockchain clients.
-type HyperSync struct {
+// Hyper manages a collection of blockchain clients.
+type Hyper struct {
 	ctx     context.Context
 	opts    options.Options
 	mu      *sync.RWMutex
@@ -21,7 +21,7 @@ type HyperSync struct {
 // It validates the provided options and initializes clients for each blockchain network.
 //
 // Returns an error if the options are invalid or if a client for any network cannot be created.
-func NewHyperSync(ctx context.Context, opts options.Options) (*HyperSync, error) {
+func NewHyper(ctx context.Context, opts options.Options) (*Hyper, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, errors.Wrap(err, "invalid options to hypersync client")
 	}
@@ -42,7 +42,7 @@ func NewHyperSync(ctx context.Context, opts options.Options) (*HyperSync, error)
 		mu.Unlock()
 	}
 
-	return &HyperSync{
+	return &Hyper{
 		ctx:     ctx,
 		opts:    opts,
 		mu:      mu,
@@ -51,7 +51,7 @@ func NewHyperSync(ctx context.Context, opts options.Options) (*HyperSync, error)
 }
 
 // GetClients returns a map of all blockchain clients managed by HyperSync.
-func (h *HyperSync) GetClients() map[utils.NetworkID]*Client {
+func (h *Hyper) GetClients() map[utils.NetworkID]*Client {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	return h.clients
@@ -59,7 +59,7 @@ func (h *HyperSync) GetClients() map[utils.NetworkID]*Client {
 
 // GetClient returns a specific blockchain client by its network ID.
 // The boolean return value indicates whether the client was found.
-func (h *HyperSync) GetClient(networkId utils.NetworkID) (*Client, bool) {
+func (h *Hyper) GetClient(networkId utils.NetworkID) (*Client, bool) {
 	fmt.Println(h.clients)
 	h.mu.RLock()
 	defer h.mu.RUnlock()

@@ -7,6 +7,7 @@ import (
 	arrowhs "github.com/enviodev/hypersync-client-go/arrow"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/pkg/errors"
 	"io"
 	"math/rand"
@@ -17,12 +18,18 @@ import (
 )
 
 type Client struct {
-	ctx    context.Context
-	opts   options.Node
-	client *http.Client
+	ctx       context.Context
+	opts      options.Node
+	client    *http.Client
+	rpcClient *ethclient.Client
 }
 
 func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
+	rpcClient, err := ethclient.DialContext(ctx, opts.RpcEndpoint)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to connect to RPC client")
+	}
+
 	return &Client{
 		ctx:  ctx,
 		opts: opts,
@@ -39,7 +46,12 @@ func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 				ExpectContinueTimeout: 1 * time.Second,
 			},
 		},
+		rpcClient: rpcClient,
 	}, nil
+}
+
+func (c *Client) GetRPC() *ethclient.Client {
+	return c.rpcClient
 }
 
 func (c *Client) GetQueryUrlFromNode(node options.Node) string {

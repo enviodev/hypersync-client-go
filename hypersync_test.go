@@ -20,9 +20,10 @@ func TestHyperSync(t *testing.T) {
 		opts: options.Options{
 			Blockchains: []options.Node{
 				{
-					Type:      utils.EthereumNetwork,
-					NetworkId: utils.EthereumNetworkID,
-					Endpoint:  "https://eth.hypersync.xyz",
+					Type:        utils.EthereumNetwork,
+					NetworkId:   utils.EthereumNetworkID,
+					Endpoint:    "https://eth.hypersync.xyz",
+					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
 				},
 			},
 		},
@@ -37,7 +38,7 @@ func TestHyperSync(t *testing.T) {
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 
-			hsClient, err := NewHyperSync(ctx, testCase.opts)
+			hsClient, err := NewHyper(ctx, testCase.opts)
 			require.NoError(t, err)
 			require.NotNil(t, hsClient)
 
