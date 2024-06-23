@@ -96,6 +96,7 @@ func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.Query
 		lastErr = err
 
 		baseMs := base * time.Millisecond
+
 		jitter := time.Duration(rand.Int63n(int64(c.opts.RetryBackoffMs))) * time.Millisecond
 
 		select {
