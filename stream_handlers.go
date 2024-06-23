@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/enviodev/hypersync-client-go/options"
-	"github.com/enviodev/hypersync-client-go/streams"
 	"github.com/enviodev/hypersync-client-go/types"
 	"math/big"
 )
 
-func (c *Client) StreamInRange(ctx context.Context, fromBlock *big.Int, toBlock *big.Int, opts *options.StreamOptions) (*streams.Stream, error) {
+func (c *Client) StreamInRange(ctx context.Context, fromBlock *big.Int, toBlock *big.Int, opts *options.StreamOptions) (*Stream, error) {
 	if fromBlock == nil {
 		return nil, fmt.Errorf("from block must not be nil")
 	}

@@ -1,10 +1,9 @@
-package streams
+package hypersyncgo
 
 import (
 	"context"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
-	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -32,7 +31,8 @@ func (s *Stream) Subscribe() error {
 	g, ctx := errgroup.WithContext(s.ctx)
 
 	g.Go(func() error {
-		return errors.New("DUMMY_TEST_ERROR")
+
+		return nil
 	})
 
 	select {
@@ -50,6 +50,7 @@ func (s *Stream) Subscribe() error {
 func (s *Stream) Unsubscribe() error {
 	close(s.ch)
 	close(s.errCh)
+	s.cancelFn()
 	return nil
 }
 

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	arrowhs "github.com/enviodev/hypersync-client-go/arrow"
 	"github.com/enviodev/hypersync-client-go/options"
-	"github.com/enviodev/hypersync-client-go/streams"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/pkg/errors"
@@ -65,8 +64,8 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string 
 	return strings.Join(paths, "/")
 }
 
-func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (*streams.Stream, error) {
-	stream, err := streams.NewStream(ctx, query, opts)
+func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (*Stream, error) {
+	stream, err := NewStream(ctx, query, opts)
 	if err != nil {
 		return nil, err
 	}
