@@ -65,7 +65,7 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string 
 }
 
 func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (*Stream, error) {
-	stream, err := NewStream(ctx, query, opts)
+	stream, err := NewStream(ctx, c, query, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -87,14 +87,13 @@ func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.Query
 	c.opts.RetryBackoffMs = time.Duration(100)
 	c.opts.MaxNumRetries = 0
 
+	var lastErr error
 	for i := 0; i < c.opts.MaxNumRetries+1; i++ {
 		response, err := DoArrow[*types.Query](ctx, c, c.GeUrlFromNodeAndPath(c.opts, "query", "arrow-ipc"), http.MethodPost, query)
 		if err == nil {
 			return response, nil
 		}
-
-		// TODO: Implement proper logger...
-		fmt.Printf("Failed to get arrow data from server, retrying... Error: %v\n", err)
+		lastErr = err
 
 		baseMs := base * time.Millisecond
 		jitter := time.Duration(rand.Int63n(int64(c.opts.RetryBackoffMs))) * time.Millisecond
@@ -107,7 +106,7 @@ func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.Query
 		}
 	}
 
-	return nil, fmt.Errorf("failed to get arrow data after retries: %d", c.opts.MaxNumRetries)
+	return nil, errors.Wrapf(lastErr, "failed to get arrow data after retries: %d", c.opts.MaxNumRetries)
 }
 
 func DoQuery[R any, T any](ctx context.Context, c *Client, method string, payload R) (*T, error) {

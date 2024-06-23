@@ -10,16 +10,18 @@ import (
 type Stream struct {
 	ctx      context.Context
 	cancelFn context.CancelFunc
+	client   *Client
 	ch       chan *types.QueryResponse
 	errCh    chan error
 	opts     *options.StreamOptions
 	query    *types.Query
 }
 
-func NewStream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (*Stream, error) {
+func NewStream(ctx context.Context, client *Client, query *types.Query, opts *options.StreamOptions) (*Stream, error) {
 	ctx, cancel := context.WithCancel(ctx)
 	return &Stream{
 		ctx:      ctx,
+		client:   client,
 		cancelFn: cancel,
 		query:    query,
 		ch:       make(chan *types.QueryResponse, opts.Concurrency.Uint64()),
@@ -31,6 +33,14 @@ func (s *Stream) Subscribe() error {
 	g, ctx := errgroup.WithContext(s.ctx)
 
 	g.Go(func() error {
+		// Process initial response - we need to know from where to continue...
+		response, err := s.client.GetArrow(s.ctx, s.query)
+		if err != nil {
+			return err
+		}
+
+		// Push initial response to the channel
+		s.ch <- response
 
 		return nil
 	})
