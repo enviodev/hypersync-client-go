@@ -79,6 +79,9 @@ func TestGetBlocksInRange(t *testing.T) {
 						t.Errorf("Got error from GetBlocksInRange: %s", cErr)
 						//require.Nil(t, bStream.Unsubscribe())
 						require.NotNil(t, cErr)
+					case <-bStream.Done():
+						t.Log("Stream successfully resolved!")
+						return
 					case response := <-bStream.Channel():
 						t.Logf("Got response from GetBlocksInRange NextBlock: %d", response.NextBlock)
 						//utils.DumpNodeNoExit(response)

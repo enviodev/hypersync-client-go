@@ -47,6 +47,12 @@ func (s *Stream) Subscribe() error {
 		// Push initial response to the channel
 		s.ch <- response
 
+		// If we've reached a total count of requested blocks, stop and signal completion.
+		if response.NextBlock.Cmp(s.query.ToBlock) == 0 {
+			close(s.done)
+			return nil
+		}
+
 		nextBlock := response.NextBlock
 		for response.HasNextBlock() {
 			iQuery := s.query
@@ -58,10 +64,13 @@ func (s *Stream) Subscribe() error {
 			}
 
 			s.ch <- iResponse
+
+			// If we've reached a total count of requested blocks, stop and signal completion.
 			if iResponse.NextBlock.Cmp(s.query.ToBlock) == 0 {
 				close(s.done)
 				return nil
 			}
+			
 			nextBlock = iResponse.NextBlock // Update nextBlock for the next iteration
 			response = iResponse            // Update response for the next iteration
 		}
