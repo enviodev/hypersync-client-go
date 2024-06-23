@@ -1,3 +1,5 @@
+[![Tests Status](https://github.com/enviodev/hypersync-client-go/actions/workflows/test.yml/badge.svg)](https://github.com/enviodev/hypersync-client-go/actions/workflows/test.yml)
+
 # HyperSync Go Client
 
 > WIP - reach out in discord if you need this :)
