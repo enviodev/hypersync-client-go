@@ -80,7 +80,7 @@ func TestGetBlocksInRange(t *testing.T) {
 		}{
 			{
 				start: big.NewInt(10000000),
-				end:   big.NewInt(10000002),
+				end:   big.NewInt(10001002),
 			},
 		},
 	}}

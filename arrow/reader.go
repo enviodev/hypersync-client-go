@@ -135,14 +135,18 @@ func (r *Reader) readChunks(data []byte, dt types.DataType) error {
 	}
 
 	rSchema := arrowReader.Schema()
+
 	for arrowReader.Next() {
-		rec := arrowReader.Record()
-		if rec == nil {
+		bRec := arrowReader.Record()
+		if bRec == nil {
 			break
 		}
 
-		if pbErr := r.processRecord(rec, rSchema, dt); pbErr != nil {
-			return errors.Wrap(pbErr, "failed to process batch")
+		for i := int64(0); i < bRec.NumRows(); i++ {
+			rec := bRec.NewSlice(i, i+1)
+			if pbErr := r.processRecord(rec, rSchema, dt); pbErr != nil {
+				return errors.Wrap(pbErr, "failed to process batch")
+			}
 		}
 
 	}

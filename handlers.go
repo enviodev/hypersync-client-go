@@ -51,7 +51,7 @@ func (c *Client) GetBlocksInRange(ctx context.Context, fromBlock *big.Int, toBlo
 
 	// Querying will not return toBlock actual value that was requested but rather toBlock-1
 	if toBlock != nil && toBlock.Cmp(big.NewInt(0)) > 0 {
-		toBlock = toBlock.Add(fromBlock, big.NewInt(1))
+		toBlock = toBlock.Add(toBlock, big.NewInt(1))
 	}
 
 	query := types.Query{
