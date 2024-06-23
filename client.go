@@ -70,8 +70,14 @@ func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.S
 		return nil, nil, err
 	}
 
-	go stream.Collect()
-	
+	// TODO: Retries?
+	go func() {
+		if sErr := stream.Subscribe(); sErr != nil {
+			stream.QueueError(sErr)
+			return
+		}
+	}()
+
 	streamCh, errCh := stream.ChannelWithError()
 	return streamCh, errCh, nil
 }

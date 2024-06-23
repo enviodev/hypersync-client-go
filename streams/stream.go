@@ -25,11 +25,10 @@ func NewStream(ctx context.Context, query *types.Query, opts *options.StreamOpti
 	}, nil
 }
 
-func (s *Stream) Collect() error {
+func (s *Stream) Subscribe() error {
 	g, ctx := errgroup.WithContext(s.ctx)
 
 	g.Go(func() error {
-		s.QueueError(errors.New("DUMMY_ERROR"))
 		return errors.New("DUMMY_TEST_ERROR")
 	})
 
