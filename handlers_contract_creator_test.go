@@ -39,7 +39,7 @@ func TestGetContractCreatorByNumber(t *testing.T) {
 			{
 				address: common.HexToAddress("0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"),
 				number:  big.NewInt(10569013),
-				hash:    common.HexToHash("0x678dc99c448fc2dbc10081160066b5f654c916340c79c3b239fe4aaad200dca9"),
+				hash:    common.HexToHash("0x0a4022e61c49c59b2538b78a6c7c9a0e4bb8c8fce2d1b4a725baef3c55fb7363"),
 			},
 		},
 	}}

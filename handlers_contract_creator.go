@@ -35,7 +35,8 @@ func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*
 			},
 		},
 		FieldSelection: types.FieldSelection{
-			Block: []string{"number", "hash"},
+			Block:       []string{"number"},
+			Transaction: []string{"hash"},
 		},
 	}
 
@@ -46,6 +47,6 @@ func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*
 
 	return &ContractCreatorResponse{
 		Number: response.Data.Blocks[0].Number,
-		Hash:   *response.Data.Blocks[0].Hash,
+		Hash:   *response.Data.Transactions[0].Hash,
 	}, nil
 }
