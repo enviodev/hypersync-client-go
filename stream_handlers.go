@@ -9,9 +9,9 @@ import (
 	"math/big"
 )
 
-func (c *Client) GetBlocksInRange(ctx context.Context, fromBlock *big.Int, toBlock *big.Int, opts *options.StreamOptions) (*streams.Stream, error) {
+func (c *Client) StreamInRange(ctx context.Context, fromBlock *big.Int, toBlock *big.Int, opts *options.StreamOptions) (*streams.Stream, error) {
 	if fromBlock == nil {
-		return nil, fmt.Errorf("fromBlock must not be nil")
+		return nil, fmt.Errorf("from block must not be nil")
 	}
 
 	// Querying will not return toBlock actual value that was requested but rather toBlock-1

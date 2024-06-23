@@ -26,6 +26,7 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
+	// TODO: What if user does not require rpcClient at all?
 	rpcClient, err := ethclient.DialContext(ctx, opts.RpcEndpoint)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to RPC client")
