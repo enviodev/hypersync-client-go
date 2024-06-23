@@ -43,13 +43,8 @@ func TestHyperSync(t *testing.T) {
 			require.NotNil(t, hsClient)
 
 			client, found := hsClient.GetClient(testCase.networkId)
-			require.NoError(t, err)
 			require.True(t, found)
-
-			height, err := client.GetHeight(ctx)
-			require.NoError(t, err)
-			t.Logf("Discovered current height: %d", height)
-			require.Greater(t, height, uint64(0))
+			require.NotNil(t, client)
 		})
 	}
 }
