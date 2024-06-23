@@ -2,15 +2,22 @@ package hypersyncgo
 
 import (
 	"context"
+	"github.com/enviodev/hypersync-client-go/logger"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"math/big"
 	"testing"
 	"time"
 )
 
 func TestGetBlocksInRange(t *testing.T) {
+	zLog, err := logger.GetZapDevelopmentLogger(zap.NewAtomicLevelAt(zap.DebugLevel))
+	require.NoError(t, err)
+	require.NotNil(t, zLog)
+	logger.SetGlobalLogger(zLog)
+
 	testCases := []struct {
 		name      string
 		opts      options.Options

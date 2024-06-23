@@ -117,7 +117,7 @@ func GetZapLogger(env string, level string) (Logger, error) {
 	configLevel, err := zap.ParseAtomicLevel(level)
 	if err != nil {
 		return nil, errors.Wrapf(err,
-			"invalid logger level provided: %s - err: %s",
+			"invalid logger level provided: %s",
 			level,
 		)
 	}
