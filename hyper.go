@@ -2,7 +2,6 @@ package hypersyncgo
 
 import (
 	"context"
-	"fmt"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/pkg/errors"
@@ -60,7 +59,6 @@ func (h *Hyper) GetClients() map[utils.NetworkID]*Client {
 // GetClient returns a specific blockchain client by its network ID.
 // The boolean return value indicates whether the client was found.
 func (h *Hyper) GetClient(networkId utils.NetworkID) (*Client, bool) {
-	fmt.Println(h.clients)
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	c, ok := h.clients[networkId]

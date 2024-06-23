@@ -64,13 +64,16 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string 
 	return strings.Join(paths, "/")
 }
 
-func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (<-chan *types.QueryResponse, error) {
+func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (<-chan *types.QueryResponse, <-chan error, error) {
 	stream, err := streams.NewStream(ctx, query, opts)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to construct new stream")
+		return nil, nil, err
 	}
 
-	return stream.Channel(), nil
+	go stream.Collect()
+	
+	streamCh, errCh := stream.ChannelWithError()
+	return streamCh, errCh, nil
 }
 
 func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.QueryResponse, error) {

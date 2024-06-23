@@ -16,7 +16,7 @@ func TestHyperSync(t *testing.T) {
 		networkId utils.NetworkID
 		addresses []common.Address
 	}{{
-		name: "Test Ethereum Client",
+		name: "Test Hyper Ethereum Client",
 		opts: options.Options{
 			Blockchains: []options.Node{
 				{

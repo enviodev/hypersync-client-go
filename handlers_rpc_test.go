@@ -90,7 +90,6 @@ func TestBlockByNumber(t *testing.T) {
 				resp, rErr := client.BlockByNumber(ctx, q)
 				require.NoError(t, rErr)
 				require.NotNil(t, resp)
-				utils.DumpNodeNoExit(resp)
 			}
 
 		})
