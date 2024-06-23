@@ -60,17 +60,20 @@ func TestGetBlocksInRange(t *testing.T) {
 			require.NotNil(t, client)
 
 			for _, r := range testCase.ranges {
-				blockCh, errCh, bErr := client.GetBlocksInRange(ctx, r.start, r.end, r.options)
-				require.Nil(t, bErr)
-				require.NotNil(t, errCh)
-				require.NotNil(t, blockCh)
+				bStream, bsErr := client.GetBlocksInRange(ctx, r.start, r.end, r.options)
+				require.Nil(t, bsErr)
+				require.NotNil(t, bStream)
+				defer func() {
+					uErr := bStream.Unsubscribe()
+					require.Nil(t, uErr)
+				}()
 
 				select {
-				case cErr := <-errCh:
+				case cErr := <-bStream.Err():
 					t.Errorf("Got error from GetBlocksInRange: %s", cErr)
 					require.NotNil(t, cErr)
-				case <-blockCh:
-
+				case response := <-bStream.Channel():
+					utils.DumpNodeNoExit(response)
 				case <-time.After(2 * time.Second):
 					require.Fail(t, "expected ranges to contain at least one block")
 				}

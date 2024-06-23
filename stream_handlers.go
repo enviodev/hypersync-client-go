@@ -4,13 +4,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/streams"
 	"github.com/enviodev/hypersync-client-go/types"
 	"math/big"
 )
 
-func (c *Client) GetBlocksInRange(ctx context.Context, fromBlock *big.Int, toBlock *big.Int, opts *options.StreamOptions) (<-chan *types.QueryResponse, <-chan error, error) {
+func (c *Client) GetBlocksInRange(ctx context.Context, fromBlock *big.Int, toBlock *big.Int, opts *options.StreamOptions) (*streams.Stream, error) {
 	if fromBlock == nil {
-		return nil, nil, fmt.Errorf("fromBlock must not be nil")
+		return nil, fmt.Errorf("fromBlock must not be nil")
 	}
 
 	// Querying will not return toBlock actual value that was requested but rather toBlock-1

@@ -64,10 +64,10 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string 
 	return strings.Join(paths, "/")
 }
 
-func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (<-chan *types.QueryResponse, <-chan error, error) {
+func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (*streams.Stream, error) {
 	stream, err := streams.NewStream(ctx, query, opts)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	// TODO: Retries?
@@ -78,8 +78,7 @@ func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.S
 		}
 	}()
 
-	streamCh, errCh := stream.ChannelWithError()
-	return streamCh, errCh, nil
+	return stream, nil
 }
 
 func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.QueryResponse, error) {
