@@ -54,10 +54,22 @@ func (qr *QueryResponse) SetNextBlock(block *big.Int) {
 	qr.NextBlock = block
 }
 
+func (qr *QueryResponse) HasNextBlock() bool {
+	return qr.NextBlock != nil && qr.NextBlock.Cmp(big.NewInt(0)) > 0
+}
+
 func (qr *QueryResponse) SetTotalExecutionTime(tet uint64) {
 	qr.TotalExecutionTime = tet
 }
 
 func (qr *QueryResponse) SetRollbackGuard(rg *RollbackGuard) {
 	qr.RollbackGuard = rg
+}
+
+func (qr *QueryResponse) HasRollbackGuard() bool {
+	return qr.RollbackGuard != nil
+}
+
+func (qr *QueryResponse) GetRollbackGuard() *RollbackGuard {
+	return qr.RollbackGuard
 }

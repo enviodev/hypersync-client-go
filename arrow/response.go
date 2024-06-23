@@ -11,6 +11,9 @@ type QueryResponseInterface interface {
 	GetData() types.DataResponse
 	SetArchiveHeight(*big.Int)
 	SetNextBlock(*big.Int)
+	HasNextBlock() bool
 	SetTotalExecutionTime(uint64)
+	HasRollbackGuard() bool
 	SetRollbackGuard(*types.RollbackGuard)
+	GetRollbackGuard() *types.RollbackGuard
 }
