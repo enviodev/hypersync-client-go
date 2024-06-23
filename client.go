@@ -6,6 +6,7 @@ import (
 	"fmt"
 	arrowhs "github.com/enviodev/hypersync-client-go/arrow"
 	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/streams"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/pkg/errors"
@@ -61,6 +62,15 @@ func (c *Client) GetQueryUrlFromNode(node options.Node) string {
 func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string {
 	paths := append([]string{node.Endpoint}, path...)
 	return strings.Join(paths, "/")
+}
+
+func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (<-chan *types.QueryResponse, error) {
+	stream, err := streams.NewStream(ctx, query, opts)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to construct new stream")
+	}
+
+	return stream.Channel(), nil
 }
 
 func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.QueryResponse, error) {

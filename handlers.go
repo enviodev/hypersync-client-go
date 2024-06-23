@@ -43,25 +43,3 @@ func (c *Client) GetHeight(ctx context.Context) (*big.Int, error) {
 func (c *Client) Get(ctx context.Context, query *types.Query) (*types.QueryResponse, error) {
 	return c.GetArrow(ctx, query)
 }
-
-func (c *Client) GetBlocksInRange(ctx context.Context, fromBlock *big.Int, toBlock *big.Int) (*types.QueryResponse, error) {
-	if fromBlock == nil {
-		return nil, fmt.Errorf("fromBlock must not be nil")
-	}
-
-	// Querying will not return toBlock actual value that was requested but rather toBlock-1
-	if toBlock != nil && toBlock.Cmp(big.NewInt(0)) > 0 {
-		toBlock = toBlock.Add(toBlock, big.NewInt(1))
-	}
-
-	query := types.Query{
-		FromBlock:        fromBlock,
-		IncludeAllBlocks: true, // We have to include all blocks otherwise data won't be returned back.
-		ToBlock:          toBlock,
-		FieldSelection: types.FieldSelection{
-			Block: []string{"number", "hash"},
-		},
-	}
-
-	return c.GetArrow(ctx, &query)
-}

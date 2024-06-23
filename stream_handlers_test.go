@@ -4,18 +4,22 @@ import (
 	"context"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"math/big"
 	"testing"
+	"time"
 )
 
-func TestGetHeight(t *testing.T) {
+func TestGetBlocksInRange(t *testing.T) {
 	testCases := []struct {
 		name      string
 		opts      options.Options
 		networkId utils.NetworkID
-		addresses []common.Address
+		ranges    []struct {
+			start   *big.Int
+			end     *big.Int
+			options *options.StreamOptions
+		}
 	}{{
 		name: "Test Ethereum Client",
 		opts: options.Options{
@@ -29,6 +33,17 @@ func TestGetHeight(t *testing.T) {
 			},
 		},
 		networkId: utils.EthereumNetworkID,
+		ranges: []struct {
+			start   *big.Int
+			end     *big.Int
+			options *options.StreamOptions
+		}{
+			{
+				start:   big.NewInt(10000000),
+				end:     big.NewInt(11000000),
+				options: options.DefaultStreamOptions(),
+			},
+		},
 	}}
 
 	for _, testCase := range testCases {
@@ -44,10 +59,18 @@ func TestGetHeight(t *testing.T) {
 			require.True(t, found)
 			require.NotNil(t, client)
 
-			height, err := client.GetHeight(ctx)
-			require.NoError(t, err)
-			t.Logf("Discovered current height: %d", height)
-			require.Greater(t, height.Uint64(), big.NewInt(0).Uint64())
+			for _, r := range testCase.ranges {
+				ranges, rErr := client.GetBlocksInRange(ctx, r.start, r.end, r.options)
+				require.NoError(t, rErr)
+				require.NotNil(t, ranges)
+
+				select {
+				case <-ranges:
+
+				case <-time.After(2 * time.Second):
+					require.Fail(t, "expected ranges to contain at least one block")
+				}
+			}
 		})
 	}
 }
