@@ -70,7 +70,7 @@ func (s *Stream) Subscribe() error {
 				close(s.done)
 				return nil
 			}
-			
+
 			nextBlock = iResponse.NextBlock // Update nextBlock for the next iteration
 			response = iResponse            // Update response for the next iteration
 		}
