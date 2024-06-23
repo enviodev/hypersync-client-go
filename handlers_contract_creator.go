@@ -4,8 +4,14 @@ import (
 	"context"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/pkg/errors"
 	"math/big"
 )
+
+type ContractCreatorResponse struct {
+	Number *big.Int    `json:"number"`
+	Hash   common.Hash `json:"hash"`
+}
 
 // GetContractCreator fetches the transaction details of the creator of a specified contract address.
 //
@@ -20,7 +26,7 @@ import (
 // Returns:
 // - *Transaction: The transaction details of the contract creator, if found.
 // - error: An error if the request fails or the contract is not found.
-func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*types.QueryResponse, error) {
+func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*ContractCreatorResponse, error) {
 	query := types.Query{
 		FromBlock: big.NewInt(0),
 		Transactions: []types.TransactionSelection{
@@ -29,8 +35,17 @@ func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*
 			},
 		},
 		FieldSelection: types.FieldSelection{
-			Block: []string{"block", "hash"},
+			Block: []string{"number", "hash"},
 		},
 	}
-	return c.GetArrow(ctx, &query)
+
+	response, err := c.GetArrow(ctx, &query)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to get contract creator by address: %s", addr)
+	}
+
+	return &ContractCreatorResponse{
+		Number: response.Data.Blocks[0].Number,
+		Hash:   *response.Data.Blocks[0].Hash,
+	}, nil
 }

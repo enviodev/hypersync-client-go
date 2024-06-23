@@ -6,6 +6,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
+	"math/big"
 	"testing"
 )
 
@@ -13,7 +14,11 @@ func TestGetContractCreatorByNumber(t *testing.T) {
 	testCases := []struct {
 		name  string
 		opts  options.Options
-		addrs []common.Address
+		cases []struct {
+			address common.Address
+			number  *big.Int
+			hash    common.Hash
+		}
 	}{{
 		name: "Test Ethereum Client",
 		opts: options.Options{
@@ -26,8 +31,16 @@ func TestGetContractCreatorByNumber(t *testing.T) {
 				},
 			},
 		},
-		addrs: []common.Address{
-			common.HexToAddress("0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"),
+		cases: []struct {
+			address common.Address
+			number  *big.Int
+			hash    common.Hash
+		}{
+			{
+				address: common.HexToAddress("0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"),
+				number:  big.NewInt(10569013),
+				hash:    common.HexToHash("0x678dc99c448fc2dbc10081160066b5f654c916340c79c3b239fe4aaad200dca9"),
+			},
 		},
 	}}
 
@@ -42,13 +55,13 @@ func TestGetContractCreatorByNumber(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, client)
 
-			for _, q := range testCase.addrs {
-				resp, rErr := client.GetContractCreator(ctx, q)
+			for _, q := range testCase.cases {
+				resp, rErr := client.GetContractCreator(ctx, q.address)
 				require.NoError(t, rErr)
 				require.NotNil(t, resp)
-				//require.Equal(t, resp., q)
+				require.Equal(t, resp.Number, q.number)
+				require.Equal(t, resp.Hash, q.hash)
 			}
-
 		})
 	}
 }
