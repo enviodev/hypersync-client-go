@@ -13,6 +13,8 @@ import (
 )
 
 func TestGetBlocksInRange(t *testing.T) {
+
+	// Here just to test somewhere that logger is actually loaded...
 	zLog, err := logger.GetZapDevelopmentLogger(zap.NewAtomicLevelAt(zap.DebugLevel))
 	require.NoError(t, err)
 	require.NotNil(t, zLog)
@@ -30,6 +32,7 @@ func TestGetBlocksInRange(t *testing.T) {
 	}{{
 		name: "Test Ethereum Client",
 		opts: options.Options{
+			LogLevel: zap.DebugLevel,
 			Blockchains: []options.Node{
 				{
 					Type:        utils.EthereumNetwork,

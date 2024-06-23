@@ -6,6 +6,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"testing"
 )
 
@@ -18,6 +19,7 @@ func TestHyperSync(t *testing.T) {
 	}{{
 		name: "Test Hyper Ethereum Client",
 		opts: options.Options{
+			LogLevel: zap.DebugLevel,
 			Blockchains: []options.Node{
 				{
 					Type:        utils.EthereumNetwork,

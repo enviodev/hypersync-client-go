@@ -5,6 +5,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"math/big"
 	"testing"
 )
@@ -17,6 +18,7 @@ func TestHeaderByNumber(t *testing.T) {
 	}{{
 		name: "Test Ethereum Client",
 		opts: options.Options{
+			LogLevel: zap.DebugLevel,
 			Blockchains: []options.Node{
 				{
 					Type:        utils.EthereumNetwork,
@@ -61,6 +63,7 @@ func TestBlockByNumber(t *testing.T) {
 	}{{
 		name: "Test Ethereum Client",
 		opts: options.Options{
+			LogLevel: zap.DebugLevel,
 			Blockchains: []options.Node{
 				{
 					Type:        utils.EthereumNetwork,
