@@ -9,12 +9,12 @@ import (
 )
 
 type TransactionSelection struct {
-	From            []Address `json:"from,omitempty"`
-	To              []Address `json:"to,omitempty"`
-	SigHash         []SigHash `json:"sighash,omitempty"`
-	Status          *uint8    `json:"status,omitempty"`
-	Kind            []uint8   `json:"type,omitempty"`
-	ContractAddress []Address `json:"contract_address,omitempty"`
+	From            []common.Address `json:"from,omitempty"`
+	To              []common.Address `json:"to,omitempty"`
+	SigHash         []SigHash        `json:"sighash,omitempty"`
+	Status          *uint8           `json:"status,omitempty"`
+	Kind            []uint8          `json:"type,omitempty"`
+	ContractAddress []common.Address `json:"contract_address,omitempty"`
 }
 
 // Transaction represents an Ethereum transaction object.

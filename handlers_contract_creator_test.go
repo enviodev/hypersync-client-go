@@ -3,19 +3,17 @@ package hypersyncgo
 import (
 	"context"
 	"github.com/enviodev/hypersync-client-go/options"
-	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
-	"math/big"
 	"testing"
 )
 
-func TestClients(t *testing.T) {
+func TestGetContractCreatorByNumber(t *testing.T) {
 	testCases := []struct {
-		name    string
-		opts    options.Options
-		queries []*types.Query
+		name  string
+		opts  options.Options
+		addrs []common.Address
 	}{{
 		name: "Test Ethereum Client",
 		opts: options.Options{
@@ -28,21 +26,8 @@ func TestClients(t *testing.T) {
 				},
 			},
 		},
-		queries: []*types.Query{
-			{
-				FromBlock: big.NewInt(10000000),
-				Transactions: []types.TransactionSelection{
-					{
-						ContractAddress: []common.Address{
-							common.HexToAddress("0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"),
-						},
-					},
-				},
-				FieldSelection: types.FieldSelection{
-					Block:       []string{"number", "hash"},
-					Transaction: []string{"hash", "block_number"},
-				},
-			},
+		addrs: []common.Address{
+			common.HexToAddress("0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"),
 		},
 	}}
 
@@ -57,16 +42,11 @@ func TestClients(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, client)
 
-			height, err := client.GetHeight(ctx)
-			require.NoError(t, err)
-			t.Logf("Discovered current height: %d", height)
-			require.Greater(t, height, uint64(0))
-
-			for _, q := range testCase.queries {
-				resp, rErr := client.Get(ctx, q)
+			for _, q := range testCase.addrs {
+				resp, rErr := client.GetContractCreator(ctx, q)
 				require.NoError(t, rErr)
 				require.NotNil(t, resp)
-				utils.DumpNodeNoExit(resp)
+				//require.Equal(t, resp., q)
 			}
 
 		})
