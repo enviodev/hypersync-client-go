@@ -72,17 +72,16 @@ func TestGetBlocksInRange(t *testing.T) {
 				bStream, bsErr := client.StreamInRange(ctx, r.start, r.end, r.options)
 				require.Nil(t, bsErr)
 				require.NotNil(t, bStream)
-				defer func() {
-					require.Nil(t, bStream.Unsubscribe())
-				}()
 
 				select {
 				case cErr := <-bStream.Err():
 					t.Errorf("Got error from GetBlocksInRange: %s", cErr)
+					require.Nil(t, bStream.Unsubscribe())
 					require.NotNil(t, cErr)
 				case response := <-bStream.Channel():
 					utils.DumpNodeNoExit(response)
 				case <-time.After(2 * time.Second):
+					require.Nil(t, bStream.Unsubscribe())
 					require.Fail(t, "expected ranges to contain at least one block")
 				}
 			}

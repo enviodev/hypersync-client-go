@@ -37,7 +37,7 @@ type Block struct {
 	// The cumulative sum of the difficulty of all blocks that have been mined in the Ethereum network since the inception of the network. It measures the overall security and integrity of the Ethereum network.
 	TotalDifficulty *big.Int `json:"total_difficulty,omitempty"`
 	// An arbitrary byte array containing data relevant to this block. This must be 32 bytes or fewer; formally Hx.
-	ExtraData *[]byte `json:"extra_data,omitempty"`
+	ExtraData *common.Hash `json:"extra_data,omitempty"`
 	// The size of this block in bytes as an integer value, encoded as hexadecimal.
 	Size *uint64 `json:"size,omitempty"`
 	// A scalar value equal to the current limit of gas expenditure per block; formally Hl.
@@ -162,7 +162,8 @@ func NewBlockFromRecord(schema *arrow.Schema, record arrow.Record) (*Block, erro
 		case "extra_data":
 			if fCol, ok := col.(*array.Binary); ok {
 				val := fCol.Value(0)
-				toReturn.ExtraData = &val
+				hash := common.BytesToHash(val)
+				toReturn.ExtraData = &hash
 			}
 		case "size":
 			if fCol, ok := col.(*array.Uint64); ok {
@@ -188,6 +189,7 @@ func NewBlockFromRecord(schema *arrow.Schema, record arrow.Record) (*Block, erro
 		case "uncles":
 			if fCol, ok := col.(*array.List); ok {
 				uncles := make([]common.Hash, fCol.Len())
+
 				/*				for j := 0; j < fCol.Len(); j++ {
 								val := fCol.Value(j).(*array.Binary).Value(0)
 								uncles[j] = common.BytesToHash(val)

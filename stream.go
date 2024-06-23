@@ -42,6 +42,16 @@ func (s *Stream) Subscribe() error {
 		// Push initial response to the channel
 		s.ch <- response
 
+		for response.HasNextBlock() {
+			s.query.FromBlock = response.NextBlock
+			iResponse, iErr := s.client.GetArrow(s.ctx, s.query)
+			if iErr != nil {
+				return iErr
+			}
+
+			s.ch <- iResponse
+		}
+
 		return nil
 	})
 
