@@ -20,55 +20,7 @@ go get github.com/enviodev/hypersync-client-go
 
 ## Examples
 
-### Get Head Block
-
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"github.com/enviodev/hypersync-client-go"
-	"github.com/enviodev/hypersync-client-go/options"
-	"github.com/enviodev/hypersync-client-go/utils"
-)
-
-func main() {
-	opts := options.Options{
-		Blockchains: []options.Node{
-			{
-				Type:      utils.EthereumNetwork,
-				NetworkId: utils.EthereumNetworkID,
-				Endpoint:  "https://eth.hypersync.xyz",
-				RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-			},
-		},
-	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	hsClient, err := hypersyncgo.NewHyper(ctx, opts)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	client, found := hsClient.GetClient(utils.EthereumNetworkID)
-	if !found {
-		fmt.Printf("failure to discover hypersync client for network: %d \n", utils.EthereumNetworkID)
-		return
-	}
-
-	height, err := client.GetHeight(ctx)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	fmt.Printf("Current network: %s, height: %d\n", utils.EthereumNetworkID, height)
-}
-```
+See more at [Examples](./examples) directory.
 
 
 ## LICENSE
