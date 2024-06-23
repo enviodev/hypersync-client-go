@@ -9,6 +9,7 @@
 Golang client for Envio's HyperSync, HyperRPC and HyperCURL clients.
 
 [Documentation Page](https://docs.envio.dev/docs/hypersync-clients)
+<br />
 [envio](https://envio.dev)
 
 ## Installation
