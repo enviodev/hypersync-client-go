@@ -24,7 +24,7 @@ func (c *Client) GetBlocksInRange(ctx context.Context, fromBlock *big.Int, toBlo
 		IncludeAllBlocks: true, // We have to include all blocks otherwise data won't be returned back.
 		ToBlock:          toBlock,
 		FieldSelection: types.FieldSelection{
-			Block: []string{"number", "hash"},
+			Block: types.BlockSchemaFieldsAsString(),
 		},
 	}
 

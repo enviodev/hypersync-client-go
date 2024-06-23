@@ -36,6 +36,15 @@ func BlockHeaderSchema(metadata *arrow.Metadata) *arrow.Schema {
 	return arrow.NewSchema(fields, metadata)
 }
 
+func BlockSchemaFieldsAsString() []string {
+	toReturn := make([]string, 0)
+	schema := BlockHeaderSchema(nil)
+	for _, field := range schema.Fields() {
+		toReturn = append(toReturn, field.Name)
+	}
+	return toReturn
+}
+
 func TransactionSchema() *arrow.Schema {
 	fields := []arrow.Field{
 		{Name: "block_hash", Type: hashDT(), Nullable: false},

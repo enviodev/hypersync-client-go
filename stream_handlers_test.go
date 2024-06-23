@@ -64,8 +64,7 @@ func TestGetBlocksInRange(t *testing.T) {
 				require.Nil(t, bsErr)
 				require.NotNil(t, bStream)
 				defer func() {
-					uErr := bStream.Unsubscribe()
-					require.Nil(t, uErr)
+					require.Nil(t, bStream.Unsubscribe())
 				}()
 
 				select {
