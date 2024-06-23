@@ -2,7 +2,7 @@ package types
 
 import "github.com/apache/arrow/go/v10/arrow"
 
-func BlockHeaderSchema() *arrow.Schema {
+func BlockHeaderSchema(metadata *arrow.Metadata) *arrow.Schema {
 	fields := []arrow.Field{
 		{Name: "number", Type: arrow.PrimitiveTypes.Uint64, Nullable: false},
 		{Name: "hash", Type: hashDT(), Nullable: false},
@@ -33,7 +33,7 @@ func BlockHeaderSchema() *arrow.Schema {
 		{Name: "send_root", Type: hashDT(), Nullable: true},
 		{Name: "mix_hash", Type: hashDT(), Nullable: true},
 	}
-	return arrow.NewSchema(fields, nil)
+	return arrow.NewSchema(fields, metadata)
 }
 
 func TransactionSchema() *arrow.Schema {

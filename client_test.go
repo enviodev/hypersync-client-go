@@ -1,4 +1,4 @@
-package client
+package hypersyncgo
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/stretchr/testify/require"
+	"math/big"
 	"testing"
 )
 
@@ -29,7 +30,7 @@ func TestClients(t *testing.T) {
 		},
 		queries: []*types.Query{
 			{
-				FromBlock: 10000000,
+				FromBlock: big.NewInt(10000000),
 				Transactions: []types.TransactionSelection{
 					{
 						ContractAddress: []types.Address{
@@ -65,7 +66,6 @@ func TestClients(t *testing.T) {
 				resp, rErr := client.Get(ctx, q)
 				require.NoError(t, rErr)
 				require.NotNil(t, resp)
-
 				utils.DumpNodeNoExit(resp)
 			}
 

@@ -11,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/pkg/errors"
 	"io"
+	"math/big"
 )
 
 type Reader struct {
@@ -42,13 +43,11 @@ func NewReader(bReader io.ReadCloser, response QueryResponseInterface) (*Reader,
 	}
 	toReturn.rootQueryResponse = queryResponse
 
-	var archiveHeight *int64
 	if queryResponse.ArchiveHeight() != -1 {
-		h := queryResponse.ArchiveHeight()
-		archiveHeight = &h
+		toReturn.response.SetArchiveHeight(big.NewInt(queryResponse.ArchiveHeight()))
 	}
-	toReturn.response.SetArchiveHeight(archiveHeight)
-	toReturn.response.SetNextBlock(queryResponse.NextBlock())
+
+	toReturn.response.SetNextBlock(big.NewInt(0).SetUint64(queryResponse.NextBlock()))
 	toReturn.response.SetTotalExecutionTime(queryResponse.TotalExecutionTime())
 
 	if queryResponse.HasRollbackGuard() {
@@ -68,7 +67,7 @@ func NewReader(bReader io.ReadCloser, response QueryResponseInterface) (*Reader,
 		}
 
 		rollbackGuard := &types.RollbackGuard{
-			BlockNumber:      rg.BlockNumber(),
+			BlockNumber:      big.NewInt(0).SetUint64(rg.BlockNumber()),
 			Timestamp:        rg.Timestamp(),
 			Hash:             common.BytesToHash(hash),
 			FirstBlockNumber: rg.FirstBlockNumber(),
@@ -142,8 +141,6 @@ func (r *Reader) readChunks(data []byte, dt types.DataType) error {
 			break
 		}
 
-		fmt.Println("readChunks - Record NumCols:", rec.NumCols())
-
 		if pbErr := r.processRecord(rec, rSchema, dt); pbErr != nil {
 			return errors.Wrap(pbErr, "failed to process batch")
 		}
@@ -158,13 +155,19 @@ func (r *Reader) readChunks(data []byte, dt types.DataType) error {
 }
 
 func (r *Reader) processRecord(record arrow.Record, schema *arrow.Schema, dt types.DataType) error {
-	fmt.Println("Process batch record columns:", record.NumCols())
-
 	switch dt {
 	case types.BlocksDataType:
-		r.response.AppendBlockData(types.Block{})
+		if block, bErr := types.NewBlockFromRecord(schema, record); bErr != nil {
+			return errors.Wrap(bErr, "failed to build block data from record")
+		} else if block != nil {
+			r.response.AppendBlockData(*block)
+		}
 	case types.TransactionsDataType:
-		r.response.AppendTransactionData(types.Transaction{})
+		if tx, bErr := types.NewTransactionFromRecord(schema, record); bErr != nil {
+			return errors.Wrap(bErr, "failed to build transaction data from record")
+		} else if tx != nil {
+			r.response.AppendTransactionData(*tx)
+		}
 	default:
 		return fmt.Errorf("unsupported data type %v", dt)
 	}

@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestClients(t *testing.T) {
+func TestHyperSync(t *testing.T) {
 	testCases := []struct {
 		name      string
 		opts      options.Options

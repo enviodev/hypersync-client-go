@@ -3,6 +3,7 @@ package types
 import (
 	"github.com/apache/arrow/go/v10/arrow"
 	"github.com/ethereum/go-ethereum/common"
+	"math/big"
 )
 
 type DataType uint8
@@ -46,7 +47,7 @@ const (
 )
 
 type RollbackGuard struct {
-	BlockNumber      uint64      `json:"block_number"`
+	BlockNumber      *big.Int    `json:"block_number"`
 	Timestamp        int64       `json:"timestamp"`
 	Hash             common.Hash `json:"hash"`
 	FirstBlockNumber uint64      `json:"first_block_number"`

@@ -1,5 +1,13 @@
 package types
 
+import (
+	"github.com/apache/arrow/go/v10/arrow"
+	"github.com/apache/arrow/go/v10/arrow/array"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/pkg/errors"
+	"math/big"
+)
+
 type TransactionSelection struct {
 	From            []Address `json:"from,omitempty"`
 	To              []Address `json:"to,omitempty"`
@@ -12,17 +20,17 @@ type TransactionSelection struct {
 // Transaction represents an Ethereum transaction object.
 type Transaction struct {
 	// The Keccak 256-bit hash of the block
-	BlockHash *Hash `json:"block_hash,omitempty"`
+	BlockHash *common.Hash `json:"block_hash,omitempty"`
 	// A scalar value equal to the number of ancestor blocks. The genesis block has a number of zero; formally Hi.
-	BlockNumber *BlockNumber `json:"block_number,omitempty"`
+	BlockNumber *big.Int `json:"block_number,omitempty"`
 	// The 160-bit address of the message call’s sender
-	From *Address `json:"from,omitempty"`
+	From *common.Address `json:"from,omitempty"`
 	// A scalar value equal to the maximum amount of gas that should be used in executing this transaction. This is paid up-front, before any computation is done and may not be increased later; formally Tg.
 	Gas *Quantity `json:"gas,omitempty"`
 	// A scalar value equal to the number of Wei to be paid per unit of gas for all computation costs incurred as a result of the execution of this transaction; formally Tp.
 	GasPrice *Quantity `json:"gas_price,omitempty"`
 	// A transaction hash is a keccak hash of an RLP encoded signed transaction.
-	Hash *Hash `json:"hash,omitempty"`
+	Hash *common.Hash `json:"hash,omitempty"`
 	// Input has two uses depending if transaction is Create or Call (if `to` field is None or Some). pub init: An unlimited size byte array specifying the EVM-code for the account initialisation procedure CREATE, data: An unlimited size byte array specifying the input data of the message call, formally Td.
 	Input *Data `json:"input,omitempty"`
 	// A scalar value equal to the number of transactions sent by the sender; formally Tn.
@@ -79,4 +87,37 @@ type Transaction struct {
 	L1FeeScalar *float64 `json:"l1_fee_scalar,omitempty"`
 	// Amount of gas spent on L1 calldata in units of L2 gas.
 	GasUsedForL1 *Quantity `json:"gas_used_for_l1,omitempty"`
+}
+
+func NewTransactionFromRecord(schema *arrow.Schema, record arrow.Record) (*Transaction, error) {
+	if record.NumCols() != int64(len(schema.Fields())) {
+		return nil, errors.New("number of columns in record does not match schema")
+	}
+
+	toReturn := &Transaction{}
+
+	for i, field := range schema.Fields() {
+		col := record.Column(i)
+		if col.Len() == 0 {
+			continue
+		}
+		switch field.Name {
+		case "hash":
+			if fCol, ok := col.(*array.Binary); ok {
+				val := fCol.Value(0)
+				hash := common.BytesToHash(val)
+				toReturn.Hash = &hash
+			}
+		case "block_number":
+			if fCol, ok := col.(*array.Uint64); ok {
+				val := fCol.Value(0)
+				toReturn.BlockNumber = big.NewInt(0).SetUint64(val)
+			}
+
+		default:
+			return nil, errors.New("unsupported field: " + field.Name)
+		}
+	}
+
+	return toReturn, nil
 }

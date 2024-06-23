@@ -3,7 +3,6 @@ package hypersyncgo
 import (
 	"context"
 	"fmt"
-	"github.com/enviodev/hypersync-client-go/client"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/pkg/errors"
@@ -14,7 +13,7 @@ type HyperSync struct {
 	ctx     context.Context
 	opts    options.Options
 	mu      sync.RWMutex
-	clients map[utils.NetworkID]*client.Client
+	clients map[utils.NetworkID]*Client
 }
 
 func NewHyperSync(ctx context.Context, opts options.Options) (*HyperSync, error) {
@@ -23,12 +22,12 @@ func NewHyperSync(ctx context.Context, opts options.Options) (*HyperSync, error)
 	}
 
 	mu := sync.RWMutex{}
-	clientMap := make(map[utils.NetworkID]*client.Client)
+	clientMap := make(map[utils.NetworkID]*Client)
 
 	for _, clientOpts := range opts.GetBlockchains() {
 		mu.Lock()
 		if _, ok := clientMap[clientOpts.NetworkId]; !ok {
-			nClient, err := client.NewClient(ctx, clientOpts)
+			nClient, err := NewClient(ctx, clientOpts)
 			if err != nil {
 				mu.Unlock()
 				return nil, errors.Wrapf(err, "failed to create hypersync client for network %s", clientOpts.NetworkId)
@@ -46,13 +45,13 @@ func NewHyperSync(ctx context.Context, opts options.Options) (*HyperSync, error)
 	}, nil
 }
 
-func (h *HyperSync) GetClients() map[utils.NetworkID]*client.Client {
+func (h *HyperSync) GetClients() map[utils.NetworkID]*Client {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	return h.clients
 }
 
-func (h *HyperSync) GetClient(networkId utils.NetworkID) (*client.Client, bool) {
+func (h *HyperSync) GetClient(networkId utils.NetworkID) (*Client, bool) {
 	fmt.Println(h.clients)
 	h.mu.RLock()
 	defer h.mu.RUnlock()

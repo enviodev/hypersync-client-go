@@ -1,4 +1,4 @@
-package client
+package hypersyncgo
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/pkg/errors"
 	"io"
+	"math/rand"
 	"net"
 	"net/http"
 	"strings"
@@ -50,8 +51,33 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string 
 	return strings.Join(paths, "/")
 }
 
-func (c *Client) Get(ctx context.Context, query *types.Query) (*types.QueryResponse, error) {
-	return c.GetArrow(ctx, query)
+func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.QueryResponse, error) {
+	base := c.opts.RetryBaseMs
+
+	c.opts.RetryBackoffMs = time.Duration(100)
+	c.opts.MaxNumRetries = 0
+
+	for i := 0; i < c.opts.MaxNumRetries+1; i++ {
+		response, err := DoArrow[*types.Query](ctx, c, c.GeUrlFromNodeAndPath(c.opts, "query", "arrow-ipc"), http.MethodPost, query)
+		if err == nil {
+			return response, nil
+		}
+
+		// TODO: Implement proper logger...
+		fmt.Printf("Failed to get arrow data from server, retrying... Error: %v\n", err)
+
+		baseMs := base * time.Millisecond
+		jitter := time.Duration(rand.Int63n(int64(c.opts.RetryBackoffMs))) * time.Millisecond
+
+		select {
+		case <-time.After(baseMs + jitter):
+			base = min(base+c.opts.RetryBackoffMs, c.opts.RetryCeilingMs)
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		}
+	}
+
+	return nil, fmt.Errorf("failed to get arrow data after retries: %d", c.opts.MaxNumRetries)
 }
 
 func DoQuery[R any, T any](ctx context.Context, c *Client, method string, payload R) (*T, error) {

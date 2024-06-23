@@ -1,11 +1,7 @@
-package client
+package hypersyncgo
 
 import (
-	"context"
-	errorshs "github.com/enviodev/hypersync-client-go/errors"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
-	"net/http"
 )
 
 // ContractCreatorFieldSelection represents the fields to be selected from the transaction response.
@@ -38,7 +34,7 @@ type ContractCreatorRequest struct {
 // Returns:
 // - *Transaction: The transaction details of the contract creator, if found.
 // - error: An error if the request fails or the contract is not found.
-func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*Transaction, error) {
+/*func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*Transaction, error) {
 	request := ContractCreatorRequest{
 		FromBlock: 0,
 		Transactions: []ContractCreatorTransaction{
@@ -61,4 +57,4 @@ func (c *Client) GetContractCreator(ctx context.Context, addr common.Address) (*
 	}
 
 	return response.Data[0].Transactions[0], nil
-}
+}*/

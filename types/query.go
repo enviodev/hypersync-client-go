@@ -1,17 +1,19 @@
 package types
 
+import "math/big"
+
 type Query struct {
-	FromBlock          uint64                 `json:"from_block,omitempty"`
-	ToBlock            *uint64                `json:"to_block,omitempty"`
+	FromBlock          *big.Int               `json:"from_block,omitempty"`
+	ToBlock            *big.Int               `json:"to_block,omitempty"`
 	Logs               []LogSelection         `json:"logs,omitempty"`
 	Transactions       []TransactionSelection `json:"transactions,omitempty"`
 	Traces             []TraceSelection       `json:"traces,omitempty"`
 	IncludeAllBlocks   bool                   `json:"include_all_blocks,omitempty"`
 	FieldSelection     FieldSelection         `json:"field_selection,omitempty"`
-	MaxNumBlocks       *uint                  `json:"max_num_blocks,omitempty"`
-	MaxNumTransactions *uint                  `json:"max_num_transactions,omitempty"`
-	MaxNumLogs         *uint                  `json:"max_num_logs,omitempty"`
-	MaxNumTraces       *uint                  `json:"max_num_traces,omitempty"`
+	MaxNumBlocks       *big.Int               `json:"max_num_blocks,omitempty"`
+	MaxNumTransactions *big.Int               `json:"max_num_transactions,omitempty"`
+	MaxNumLogs         *big.Int               `json:"max_num_logs,omitempty"`
+	MaxNumTraces       *big.Int               `json:"max_num_traces,omitempty"`
 	JoinMode           JoinMode               `json:"join_mode,omitempty"`
 }
 
@@ -19,11 +21,11 @@ type Query struct {
 // Contain next_block field in case query didn't process all the block range
 type QueryResponse struct {
 	// Current height of the source hypersync instance
-	ArchiveHeight *int64 `json:"archive_height"`
+	ArchiveHeight *big.Int `json:"archive_height"`
 	// Next block to query for, the responses are paginated so
 	// the caller should continue the query from this block if they
 	// didn't get responses up to the to_block they specified in the Query.
-	NextBlock uint64 `json:"next_block"`
+	NextBlock *big.Int `json:"next_block"`
 	// Total time it took the hypersync instance to execute the query.
 	TotalExecutionTime uint64 `json:"total_execution_time"`
 	// Response data
@@ -44,11 +46,11 @@ func (qr *QueryResponse) AppendTransactionData(data Transaction) {
 	qr.Data.Transactions = append(qr.Data.Transactions, data)
 }
 
-func (qr *QueryResponse) SetArchiveHeight(height *int64) {
+func (qr *QueryResponse) SetArchiveHeight(height *big.Int) {
 	qr.ArchiveHeight = height
 }
 
-func (qr *QueryResponse) SetNextBlock(block uint64) {
+func (qr *QueryResponse) SetNextBlock(block *big.Int) {
 	qr.NextBlock = block
 }
 

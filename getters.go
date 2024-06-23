@@ -1,9 +1,10 @@
-package client
+package hypersyncgo
 
 import (
 	"context"
 	"fmt"
 	"github.com/enviodev/hypersync-client-go/types"
+	"math/big"
 	"math/rand"
 	"net/http"
 	"time"
@@ -33,4 +34,19 @@ func (c *Client) GetHeight(ctx context.Context) (uint64, error) {
 	}
 
 	return 0, fmt.Errorf("failed to get height after retries: %d", c.opts.MaxNumRetries)
+}
+
+func (c *Client) Get(ctx context.Context, query *types.Query) (*types.QueryResponse, error) {
+	return c.GetArrow(ctx, query)
+}
+
+func (c *Client) HeaderByNumber(ctx context.Context, blockNumber *big.Int) (*types.QueryResponse, error) {
+	query := types.Query{
+		FromBlock: blockNumber,
+		ToBlock:   blockNumber,
+		FieldSelection: types.FieldSelection{
+			Block: []string{"number", "hash"},
+		},
+	}
+	return c.GetArrow(ctx, &query)
 }
