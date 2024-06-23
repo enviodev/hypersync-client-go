@@ -30,6 +30,7 @@ func main() {
 				Type:      utils.EthereumNetwork,
 				NetworkId: utils.EthereumNetworkID,
 				Endpoint:  "https://eth.hypersync.xyz",
+				RpcEndpoint: "...",
 			},
 		},
 	}
@@ -37,7 +38,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	hsClient, err := hypersyncgo.NewHyperSync(ctx, opts)
+	hsClient, err := hypersyncgo.NewHyper(ctx, opts)
 	if err != nil {
 		fmt.Println(err)
 		return
