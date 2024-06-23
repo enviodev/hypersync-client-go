@@ -5,6 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOSECGOVERSION: "go1.22.4"
+      GOTOOLCHAIN: "go1.22.4"
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
