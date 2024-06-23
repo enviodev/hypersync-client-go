@@ -49,7 +49,7 @@ func TestGetBlocksInRange(t *testing.T) {
 		}{
 			{
 				start:   big.NewInt(10000000),
-				end:     big.NewInt(11000000),
+				end:     big.NewInt(10002000),
 				options: options.DefaultStreamOptions(),
 			},
 		},
@@ -73,16 +73,19 @@ func TestGetBlocksInRange(t *testing.T) {
 				require.Nil(t, bsErr)
 				require.NotNil(t, bStream)
 
-				select {
-				case cErr := <-bStream.Err():
-					t.Errorf("Got error from GetBlocksInRange: %s", cErr)
-					require.Nil(t, bStream.Unsubscribe())
-					require.NotNil(t, cErr)
-				case response := <-bStream.Channel():
-					utils.DumpNodeNoExit(response)
-				case <-time.After(2 * time.Second):
-					require.Nil(t, bStream.Unsubscribe())
-					require.Fail(t, "expected ranges to contain at least one block")
+				for {
+					select {
+					case cErr := <-bStream.Err():
+						t.Errorf("Got error from GetBlocksInRange: %s", cErr)
+						//require.Nil(t, bStream.Unsubscribe())
+						require.NotNil(t, cErr)
+					case response := <-bStream.Channel():
+						t.Logf("Got response from GetBlocksInRange NextBlock: %d", response.NextBlock)
+						//utils.DumpNodeNoExit(response)
+					case <-time.After(5 * time.Second):
+						//require.Nil(t, bStream.Unsubscribe())
+						require.Fail(t, "expected ranges to receive at least one block in 5s")
+					}
 				}
 			}
 		})

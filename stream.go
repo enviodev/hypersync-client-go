@@ -15,6 +15,7 @@ type Stream struct {
 	errCh    chan error
 	opts     *options.StreamOptions
 	query    *types.Query
+	done     chan struct{}
 }
 
 func NewStream(ctx context.Context, client *Client, query *types.Query, opts *options.StreamOptions) (*Stream, error) {
@@ -26,6 +27,7 @@ func NewStream(ctx context.Context, client *Client, query *types.Query, opts *op
 		query:    query,
 		ch:       make(chan *types.QueryResponse, opts.Concurrency.Uint64()),
 		errCh:    make(chan error, opts.Concurrency.Uint64()),
+		done:     make(chan struct{}),
 	}, nil
 }
 
@@ -34,7 +36,10 @@ func (s *Stream) Subscribe() error {
 
 	g.Go(func() error {
 		// Process initial response - we need to know from where to continue...
-		response, err := s.client.GetArrow(s.ctx, s.query)
+		iCtx, iCancel := context.WithCancel(s.ctx)
+		defer iCancel()
+
+		response, err := s.client.GetArrow(iCtx, s.query)
 		if err != nil {
 			return err
 		}
@@ -42,20 +47,31 @@ func (s *Stream) Subscribe() error {
 		// Push initial response to the channel
 		s.ch <- response
 
+		nextBlock := response.NextBlock
 		for response.HasNextBlock() {
-			s.query.FromBlock = response.NextBlock
-			iResponse, iErr := s.client.GetArrow(s.ctx, s.query)
+			iQuery := s.query
+			iQuery.FromBlock = nextBlock
+
+			iResponse, iErr := s.client.GetArrow(iCtx, iQuery)
 			if iErr != nil {
 				return iErr
 			}
 
 			s.ch <- iResponse
+			if iResponse.NextBlock.Cmp(s.query.ToBlock) == 0 {
+				close(s.done)
+				return nil
+			}
+			nextBlock = iResponse.NextBlock // Update nextBlock for the next iteration
+			response = iResponse            // Update response for the next iteration
 		}
 
 		return nil
 	})
 
 	select {
+	case <-s.done:
+		return nil
 	case <-ctx.Done():
 		return s.ctx.Err()
 	default:
@@ -84,6 +100,10 @@ func (s *Stream) Err() <-chan error {
 
 func (s *Stream) Channel() <-chan *types.QueryResponse {
 	return s.ch
+}
+
+func (s *Stream) Done() <-chan struct{} {
+	return s.done
 }
 
 func (s *Stream) ChannelWithError() (<-chan *types.QueryResponse, <-chan error) {

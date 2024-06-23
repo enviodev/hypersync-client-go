@@ -58,6 +58,7 @@ type StreamOptions struct {
 
 func DefaultStreamOptions() *StreamOptions {
 	return &StreamOptions{
-		Concurrency: big.NewInt(10),
+		Concurrency:  big.NewInt(10),
+		MaxBatchSize: big.NewInt(1024),
 	}
 }

@@ -30,7 +30,7 @@ func main() {
 				Type:      utils.EthereumNetwork,
 				NetworkId: utils.EthereumNetworkID,
 				Endpoint:  "https://eth.hypersync.xyz",
-				RpcEndpoint: "...",
+				RpcEndpoint: "https://eth.rpc.hypersync.xyz",
 			},
 		},
 	}

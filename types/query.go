@@ -1,6 +1,8 @@
 package types
 
-import "math/big"
+import (
+	"math/big"
+)
 
 type Query struct {
 	FromBlock          *big.Int               `json:"from_block,omitempty"`
@@ -55,7 +57,7 @@ func (qr *QueryResponse) SetNextBlock(block *big.Int) {
 }
 
 func (qr *QueryResponse) HasNextBlock() bool {
-	return qr.NextBlock != nil && qr.NextBlock.Cmp(big.NewInt(0)) > 0
+	return qr.NextBlock != nil
 }
 
 func (qr *QueryResponse) SetTotalExecutionTime(tet uint64) {
