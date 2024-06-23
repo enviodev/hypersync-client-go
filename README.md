@@ -6,8 +6,16 @@
 
 > WIP - reach out in discord if you need this :)
 
+Golang client for Envio's HyperSync, HyperRPC and HyperCURL clients.
+
+[Documentation Page](https://docs.envio.dev/docs/hypersync-clients)
 [envio](https://envio.dev)
 
+## Installation
+
+```bash
+go get github.com/enviodev/hypersync-client-go
+```
 
 ## Examples
 
