@@ -55,3 +55,10 @@ func DefaultStreamOptions() *StreamOptions {
 		BatchSize:   big.NewInt(4096),
 	}
 }
+
+func DefaultStreamOptionsWithBatchSize(batchSize *big.Int) *StreamOptions {
+	return &StreamOptions{
+		Concurrency: big.NewInt(0).SetInt64(int64(runtime.NumCPU())),
+		BatchSize:   batchSize,
+	}
+}

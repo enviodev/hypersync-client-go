@@ -45,7 +45,7 @@ func BlockSchemaFieldsAsString() []string {
 	return toReturn
 }
 
-func TransactionSchema() *arrow.Schema {
+func TransactionSchema(metadata *arrow.Metadata) *arrow.Schema {
 	fields := []arrow.Field{
 		{Name: "block_hash", Type: hashDT(), Nullable: false},
 		{Name: "block_number", Type: arrow.PrimitiveTypes.Uint64, Nullable: false},
@@ -83,7 +83,16 @@ func TransactionSchema() *arrow.Schema {
 		{Name: "max_fee_per_blob_gas", Type: arrow.PrimitiveTypes.Int64, Nullable: true},
 		{Name: "blob_versioned_hashes", Type: arrow.BinaryTypes.Binary, Nullable: true},
 	}
-	return arrow.NewSchema(fields, nil)
+	return arrow.NewSchema(fields, metadata)
+}
+
+func TransactionSchemaFieldsAsString() []string {
+	toReturn := make([]string, 0)
+	schema := TransactionSchema(nil)
+	for _, field := range schema.Fields() {
+		toReturn = append(toReturn, field.Name)
+	}
+	return toReturn
 }
 
 func LogSchema() *arrow.Schema {

@@ -5,6 +5,7 @@ import (
 	"github.com/enviodev/hypersync-client-go"
 	"github.com/enviodev/hypersync-client-go/logger"
 	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"go.uber.org/zap"
 	"math/big"
@@ -45,8 +46,8 @@ func main() {
 		return
 	}
 
-	startBlock := big.NewInt(10000000)
-	endBlock := big.NewInt(10120010)
+	startBlock := big.NewInt(20000000)
+	endBlock := big.NewInt(20000300)
 	startTime := time.Now()
 
 	logger.L().Info(
@@ -57,7 +58,15 @@ func main() {
 		zap.Any("end_block", endBlock),
 	)
 
-	bStream, bsErr := client.StreamBlocksInRange(ctx, startBlock, endBlock, options.DefaultStreamOptions())
+	statusValue := uint8(1)
+	selections := []types.TransactionSelection{
+		{
+			Status: &statusValue,
+		},
+	}
+
+	batchSize := big.NewInt(10)
+	bStream, bsErr := client.StreamTransactionsInRange(ctx, startBlock, endBlock, selections, options.DefaultStreamOptionsWithBatchSize(batchSize))
 	if bsErr != nil {
 		logger.L().Error(
 			"failure to execute hyper client stream in range",
@@ -70,6 +79,8 @@ func main() {
 	}
 
 	latestBatchReceived := big.NewInt(0)
+	totalBlocks := make(map[uint64]struct{})
+	totalTxns := 0
 	for {
 		select {
 		case cErr := <-bStream.Err():
@@ -91,10 +102,18 @@ func main() {
 			)
 			latestBatchReceived = response.NextBlock
 
+			totalTxns += len(response.GetTransactions())
+			for _, tx := range response.GetTransactions() {
+				//fmt.Printf("Block: %d, Hash: %s \n", tx.BlockNumber, tx.Hash)
+				totalBlocks[tx.BlockNumber.Uint64()] = struct{}{}
+			}
+
 		case <-bStream.Done():
 			logger.L().Info(
 				"Stream request successfully completed",
 				zap.Duration("duration", time.Since(startTime)),
+				zap.Any("total_blocks", len(totalBlocks)),
+				zap.Any("total_transactions", totalTxns),
 			)
 			return
 		case <-time.After(25 * time.Second):

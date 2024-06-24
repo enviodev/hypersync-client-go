@@ -38,8 +38,8 @@ type OrderedResult[T any, R *types.QueryResponse] struct {
 	err    error
 }
 
-// New creates a new instance of a type-specific Worker.
-func New[T any, R *types.QueryResponse](ctx context.Context, iterator *BlockIterator, channel chan R, done chan struct{}, opts *options.StreamOptions) (*Worker[T, R], error) {
+// NewWorker creates a new instance of a type-specific Worker.
+func NewWorker[T any, R *types.QueryResponse](ctx context.Context, iterator *BlockIterator, channel chan R, done chan struct{}, opts *options.StreamOptions) (*Worker[T, R], error) {
 	return &Worker[T, R]{
 		ctx:      ctx,
 		opts:     opts,

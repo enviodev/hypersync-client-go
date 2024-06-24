@@ -75,3 +75,19 @@ func (qr *QueryResponse) HasRollbackGuard() bool {
 func (qr *QueryResponse) GetRollbackGuard() *RollbackGuard {
 	return qr.RollbackGuard
 }
+
+func (qr *QueryResponse) GetBlocks() []Block {
+	return qr.Data.Blocks
+}
+
+func (qr *QueryResponse) GetTransactions() []Transaction {
+	return qr.Data.Transactions
+}
+
+func (qr *QueryResponse) GetLogs() []Log {
+	return qr.Data.Logs
+}
+
+func (qr *QueryResponse) GetTraces() []Trace {
+	return qr.Data.Traces
+}

@@ -69,7 +69,7 @@ func TestGetBlocksInRange(t *testing.T) {
 			require.NotNil(t, client)
 
 			for _, r := range testCase.ranges {
-				bStream, bsErr := client.StreamInRange(ctx, r.start, r.end, r.options)
+				bStream, bsErr := client.StreamBlocksInRange(ctx, r.start, r.end, r.options)
 				require.Nil(t, bsErr)
 				require.NotNil(t, bStream)
 
