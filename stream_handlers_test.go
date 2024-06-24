@@ -49,7 +49,7 @@ func TestGetBlocksInRange(t *testing.T) {
 		}{
 			{
 				start:   big.NewInt(10000000),
-				end:     big.NewInt(10002000),
+				end:     big.NewInt(10020000),
 				options: options.DefaultStreamOptions(),
 			},
 		},

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/enviodev/hypersync-client-go"
 	"github.com/enviodev/hypersync-client-go/logger"
 	"github.com/enviodev/hypersync-client-go/options"
@@ -47,7 +46,8 @@ func main() {
 	}
 
 	startBlock := big.NewInt(10000000)
-	endBlock := big.NewInt(10015000)
+	endBlock := big.NewInt(10120010)
+	startTime := time.Now()
 
 	logger.L().Info(
 		"New blocks in range stream request started",
@@ -69,6 +69,7 @@ func main() {
 		return
 	}
 
+	latestBatchReceived := big.NewInt(0)
 	for {
 		select {
 		case cErr := <-bStream.Err():
@@ -83,21 +84,25 @@ func main() {
 		case response := <-bStream.Channel():
 			logger.L().Info(
 				"New stream block response",
-				zap.Any("next_block", response.NextBlock),
+				zap.Any("start_block", startBlock),
+				zap.Any("current_sync_block", response.NextBlock),
+				zap.Any("end_block", endBlock),
+				zap.Duration("current_processing_time", time.Since(startTime)),
 			)
-
-			for _, block := range response.Data.Blocks {
-				fmt.Println("Hash:", block.Hash)
-			}
+			latestBatchReceived = response.NextBlock
 
 		case <-bStream.Done():
-			logger.L().Info("Stream request successfully completed")
+			logger.L().Info(
+				"Stream request successfully completed",
+				zap.Duration("duration", time.Since(startTime)),
+			)
 			return
-		case <-time.After(5 * time.Second):
+		case <-time.After(25 * time.Second):
 			logger.L().Error(
 				"expected ranges to receive at least one block in 5s",
 				zap.Any("network_id", utils.EthereumNetworkID),
 				zap.Any("start_block", startBlock),
+				zap.Any("latest_batch_block_received", latestBatchReceived),
 				zap.Any("end_block", endBlock),
 			)
 			return
