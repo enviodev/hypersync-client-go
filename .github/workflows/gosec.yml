@@ -1,0 +1,21 @@
+name: Security
+on: [push]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      GOSECGOVERSION: "go1.22.4"
+      GOTOOLCHAIN: "go1.22.4"
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22.4'
+
+      - name: Run Gosec Security Scanner
+        uses: securego/gosec@master
+        with:
+          args: -exclude-generated ./... --exclude=G104,G302,G304,G306,G107,G404 ./...
