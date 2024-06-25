@@ -69,7 +69,6 @@ func NewStream(ctx context.Context, client *Client, query *types.Query, opts *op
 func (s *Stream) ProcessNextQuery(query *types.Query) (*types.QueryResponse, error) {
 	ctx, cancel := context.WithCancel(s.ctx)
 	defer cancel()
-
 	return s.client.GetArrow(ctx, query)
 }
 
@@ -150,6 +149,14 @@ func (s *Stream) Err() <-chan error {
 // Channel returns the stream's response channel.
 func (s *Stream) Channel() <-chan *types.QueryResponse {
 	return s.ch
+}
+
+// Ack acknowledges that a response has been processed.
+// This method is thread-safe.
+func (s *Stream) Ack() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.worker.Ack()
 }
 
 // Done returns a channel that signals when the stream is done.

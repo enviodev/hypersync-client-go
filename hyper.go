@@ -17,7 +17,7 @@ type Hyper struct {
 	clients map[utils.NetworkID]*Client
 }
 
-// NewHyperSync creates a new instance of HyperSync with the given context and options.
+// NewHyper creates a new instance of HyperSync with the given context and options.
 // It validates the provided options and initializes clients for each blockchain network.
 //
 // Returns an error if the options are invalid or if a client for any network cannot be created.

@@ -11,6 +11,8 @@ type DataType uint8
 const (
 	BlocksDataType DataType = iota
 	TransactionsDataType
+	LogsDataType
+	TracesDataType
 	// You can add more DataTypes here
 )
 

@@ -32,6 +32,11 @@ type StreamOptions struct {
 	// BatchSize is the initial batch size. Size would be adjusted based on response size during execution.
 	BatchSize *big.Int `mapstructure:"batchSize" yaml:"batchSize" json:"batchSize"`
 
+	// DisableAcknowledgements streaming as soon as all retrievals are completed will signal completion of workload.
+	// WARNING: Disable on your own will, you should not touch this if you're not sure why.
+	// If unsure, leave as is and don't touch this option!
+	DisableAcknowledgements bool `yaml:"disableAcknowledgements" json:"disableAcknowledgements" mapstructure:"disableAcknowledgements"`
+
 	// MaxBatchSize is the maximum batch size that could be used during dynamic adjustment.
 	MaxBatchSize *big.Int `mapstructure:"maxBatchSize" yaml:"maxBatchSize" json:"maxBatchSize"`
 

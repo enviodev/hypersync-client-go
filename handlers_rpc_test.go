@@ -50,7 +50,6 @@ func TestHeaderByNumber(t *testing.T) {
 				require.NotNil(t, resp)
 				require.Equal(t, resp.Number, q)
 			}
-
 		})
 	}
 }
@@ -94,7 +93,6 @@ func TestBlockByNumber(t *testing.T) {
 				require.NoError(t, rErr)
 				require.NotNil(t, resp)
 			}
-
 		})
 	}
 }

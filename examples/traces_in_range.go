@@ -1,6 +1,3 @@
-//go:build ignore
-// +build ignore
-
 package main
 
 import (
@@ -10,6 +7,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/enviodev/hypersync-client-go/utils"
+	"github.com/ethereum/go-ethereum/common"
 	"go.uber.org/zap"
 	"math/big"
 	"time"
@@ -54,22 +52,24 @@ func main() {
 	startTime := time.Now()
 
 	logger.L().Info(
-		"New blocks in range stream request started",
+		"New trace in range stream request started",
 		zap.Error(err),
 		zap.Any("network_id", utils.EthereumNetworkID),
 		zap.Any("start_block", startBlock),
 		zap.Any("end_block", endBlock),
 	)
 
-	statusValue := uint8(1)
-	selections := []types.TransactionSelection{
+	selections := []types.TraceSelection{
 		{
-			Status: &statusValue,
+			To: []common.Address{
+				// Uniswap V2: Router 2
+				common.HexToAddress("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"),
+			},
 		},
 	}
 
 	batchSize := big.NewInt(50)
-	bStream, bsErr := client.StreamTransactionsInRange(ctx, startBlock, endBlock, selections, options.DefaultStreamOptionsWithBatchSize(batchSize))
+	bStream, bsErr := client.StreamTracesInRange(ctx, startBlock, endBlock, selections, options.DefaultStreamOptionsWithBatchSize(batchSize))
 	if bsErr != nil {
 		logger.L().Error(
 			"failure to execute hyper client stream in range",
@@ -97,7 +97,7 @@ func main() {
 			return
 		case response := <-bStream.Channel():
 			logger.L().Info(
-				"New stream block response",
+				"New stream trace response",
 				zap.Any("start_block", startBlock),
 				zap.Any("current_sync_block", response.NextBlock),
 				zap.Any("end_block", endBlock),
@@ -105,8 +105,8 @@ func main() {
 			)
 			latestBatchReceived = response.NextBlock
 
-			totalTxns += len(response.GetTransactions())
-			for _, tx := range response.GetTransactions() {
+			totalTxns += len(response.GetTraces())
+			for _, tx := range response.GetTraces() {
 				totalBlocks[tx.BlockNumber.Uint64()] = struct{}{}
 			}
 
@@ -123,12 +123,12 @@ func main() {
 				"Stream request successfully completed",
 				zap.Duration("duration", time.Since(startTime)),
 				zap.Any("total_blocks", len(totalBlocks)),
-				zap.Any("total_transactions", totalTxns),
+				zap.Any("total_traces", totalTxns),
 			)
 			return
 		case <-time.After(15 * time.Second):
 			logger.L().Error(
-				"expected ranges to receive at least one block range in 15s",
+				"expected ranges to receive at least one trace range in 15s",
 				zap.Any("network_id", utils.EthereumNetworkID),
 				zap.Any("start_block", startBlock),
 				zap.Any("latest_batch_block_received", latestBatchReceived),

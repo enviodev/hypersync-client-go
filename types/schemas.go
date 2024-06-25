@@ -95,7 +95,7 @@ func TransactionSchemaFieldsAsString() []string {
 	return toReturn
 }
 
-func LogSchema() *arrow.Schema {
+func LogSchema(metadata *arrow.Metadata) *arrow.Schema {
 	fields := []arrow.Field{
 		{Name: "removed", Type: arrow.FixedWidthTypes.Boolean, Nullable: true},
 		{Name: "log_index", Type: arrow.PrimitiveTypes.Uint64, Nullable: false},
@@ -110,10 +110,19 @@ func LogSchema() *arrow.Schema {
 		{Name: "topic2", Type: arrow.BinaryTypes.Binary, Nullable: true},
 		{Name: "topic3", Type: arrow.BinaryTypes.Binary, Nullable: true},
 	}
-	return arrow.NewSchema(fields, nil)
+	return arrow.NewSchema(fields, metadata)
 }
 
-func TraceSchema() *arrow.Schema {
+func LogSchemaFieldsAsString() []string {
+	toReturn := make([]string, 0)
+	schema := LogSchema(nil)
+	for _, field := range schema.Fields() {
+		toReturn = append(toReturn, field.Name)
+	}
+	return toReturn
+}
+
+func TraceSchema(metadata *arrow.Metadata) *arrow.Schema {
 	fields := []arrow.Field{
 		{Name: "from", Type: addrDT(), Nullable: true},
 		{Name: "to", Type: addrDT(), Nullable: true},
@@ -138,5 +147,14 @@ func TraceSchema() *arrow.Schema {
 		{Name: "error", Type: arrow.BinaryTypes.String, Nullable: true},
 		{Name: "sighash", Type: arrow.BinaryTypes.Binary, Nullable: true},
 	}
-	return arrow.NewSchema(fields, nil)
+	return arrow.NewSchema(fields, metadata)
+}
+
+func TraceSchemaFieldsAsString() []string {
+	toReturn := make([]string, 0)
+	schema := TraceSchema(nil)
+	for _, field := range schema.Fields() {
+		toReturn = append(toReturn, field.Name)
+	}
+	return toReturn
 }

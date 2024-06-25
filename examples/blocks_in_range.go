@@ -94,6 +94,14 @@ func main() {
 			)
 			latestBatchReceived = response.NextBlock
 
+			// Worker may close a done channel at any point in time after it receives all the payload.
+			// Usually and depending on the payload size,
+			// it takes around 5-100ms after stream is completed for messages to fully be delivered.
+			// Instead of using time.Sleep(), we have Ack() mechanism that allows you finer worker closure management.
+			// WARN: This is critical part of communication with stream and should always be used unless you have
+			// disabled it via configuration. By default, ack is a must!
+			bStream.Ack()
+
 		case <-bStream.Done():
 			logger.L().Info(
 				"Stream request successfully completed",

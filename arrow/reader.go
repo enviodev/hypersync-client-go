@@ -14,17 +14,20 @@ import (
 	"math/big"
 )
 
+// Reader is responsible for reading and processing query responses.
 type Reader struct {
 	reader            io.Reader
 	rootQueryResponse hypersynccapnp.QueryResponse
 	response          QueryResponseInterface
 }
 
+// NewQueryResponseReader creates a new Reader instance from an io.ReadCloser.
 func NewQueryResponseReader(bReader io.ReadCloser) (*Reader, error) {
 	queryResponse := &types.QueryResponse{Data: types.DataResponse{}}
 	return NewReader(bReader, queryResponse)
 }
 
+// NewReader initializes a Reader with a provided io.ReadCloser and QueryResponseInterface.
 func NewReader(bReader io.ReadCloser, response QueryResponseInterface) (*Reader, error) {
 	toReturn := &Reader{
 		reader:   bReader,
@@ -83,14 +86,17 @@ func NewReader(bReader io.ReadCloser, response QueryResponseInterface) (*Reader,
 	return toReturn, nil
 }
 
+// GetRootQueryResponse returns the root query response.
 func (r *Reader) GetRootQueryResponse() hypersynccapnp.QueryResponse {
 	return r.rootQueryResponse
 }
 
+// GetQueryResponse returns the query response.
 func (r *Reader) GetQueryResponse() *types.QueryResponse {
 	return r.response.(*types.QueryResponse)
 }
 
+// processData processes the data in the query response.
 func (r *Reader) processData() error {
 	dataPtr, dpErr := r.rootQueryResponse.Data()
 	if dpErr != nil {
@@ -119,9 +125,32 @@ func (r *Reader) processData() error {
 		}
 	}
 
+	if dataPtr.HasLogs() {
+		blocks, bErr := dataPtr.Logs()
+		if bErr != nil {
+			return errors.Wrap(bErr, "failed to parse logs data")
+		}
+
+		if bdErr := r.readChunks(blocks, types.LogsDataType); bdErr != nil {
+			return errors.Wrap(bdErr, "failed to read chunks from logs data")
+		}
+	}
+
+	if dataPtr.HasTraces() {
+		blocks, bErr := dataPtr.Traces()
+		if bErr != nil {
+			return errors.Wrap(bErr, "failed to parse traces data")
+		}
+
+		if bdErr := r.readChunks(blocks, types.TracesDataType); bdErr != nil {
+			return errors.Wrap(bdErr, "failed to read chunks from traces data")
+		}
+	}
+
 	return nil
 }
 
+// readChunks reads and processes chunks of data from the provided byte slice.
 func (r *Reader) readChunks(data []byte, dt types.DataType) error {
 	if len(data) < 16 { // Minimum length for a valid Arrow IPC message + Polaris Arrow
 		return errors.New("data length is too short to be a valid Arrow IPC message")
@@ -148,7 +177,6 @@ func (r *Reader) readChunks(data []byte, dt types.DataType) error {
 				return errors.Wrap(pbErr, "failed to process batch")
 			}
 		}
-
 	}
 
 	if arErr := arrowReader.Err(); arErr != nil {
@@ -158,6 +186,7 @@ func (r *Reader) readChunks(data []byte, dt types.DataType) error {
 	return nil
 }
 
+// processRecord processes an Arrow record based on the provided data type.
 func (r *Reader) processRecord(record arrow.Record, schema *arrow.Schema, dt types.DataType) error {
 	switch dt {
 	case types.BlocksDataType:
@@ -172,12 +201,25 @@ func (r *Reader) processRecord(record arrow.Record, schema *arrow.Schema, dt typ
 		} else if tx != nil {
 			r.response.AppendTransactionData(*tx)
 		}
+	case types.LogsDataType:
+		if log, bErr := types.NewLogFromRecord(schema, record); bErr != nil {
+			return errors.Wrap(bErr, "failed to build log data from record")
+		} else if log != nil {
+			r.response.AppendLogData(*log)
+		}
+	case types.TracesDataType:
+		if trace, bErr := types.NewTraceFromRecord(schema, record); bErr != nil {
+			return errors.Wrap(bErr, "failed to build log data from record")
+		} else if trace != nil {
+			r.response.AppendTraceData(*trace)
+		}
 	default:
 		return fmt.Errorf("unsupported data type %v", dt)
 	}
 	return nil
 }
 
+// Close closes the reader. Currently, it does nothing but is provided for future use.
 func (r *Reader) Close() error {
 	return nil
 }

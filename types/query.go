@@ -48,6 +48,14 @@ func (qr *QueryResponse) AppendTransactionData(data Transaction) {
 	qr.Data.Transactions = append(qr.Data.Transactions, data)
 }
 
+func (qr *QueryResponse) AppendLogData(data Log) {
+	qr.Data.Logs = append(qr.Data.Logs, data)
+}
+
+func (qr *QueryResponse) AppendTraceData(data Trace) {
+	qr.Data.Traces = append(qr.Data.Traces, data)
+}
+
 func (qr *QueryResponse) SetArchiveHeight(height *big.Int) {
 	qr.ArchiveHeight = height
 }
