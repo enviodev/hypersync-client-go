@@ -4,18 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	arrowhs "github.com/enviodev/hypersync-client-go/arrow"
+	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/types"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/pkg/errors"
 	"io"
 	"math/rand"
 	"net"
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/ethereum/go-ethereum/ethclient"
-	arrowhs "github.com/markovichecha/hypersync-client-go/arrow"
-	"github.com/markovichecha/hypersync-client-go/options"
-	"github.com/markovichecha/hypersync-client-go/types"
-	"github.com/pkg/errors"
 )
 
 type Client struct {

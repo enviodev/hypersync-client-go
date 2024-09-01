@@ -2,12 +2,11 @@ package hypersyncgo
 
 import (
 	"context"
-	"sync"
-
-	"github.com/markovichecha/hypersync-client-go/logger"
-	"github.com/markovichecha/hypersync-client-go/options"
-	"github.com/markovichecha/hypersync-client-go/utils"
+	"github.com/enviodev/hypersync-client-go/logger"
+	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/pkg/errors"
+	"sync"
 )
 
 // Hyper manages a collection of blockchain clients.

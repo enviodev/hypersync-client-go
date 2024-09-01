@@ -2,14 +2,13 @@ package hypersyncgo
 
 import (
 	"context"
-	"math/big"
-	"testing"
-
+	"github.com/enviodev/hypersync-client-go/options"
+	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/markovichecha/hypersync-client-go/options"
-	"github.com/markovichecha/hypersync-client-go/utils"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	"math/big"
+	"testing"
 )
 
 func TestGetHeight(t *testing.T) {

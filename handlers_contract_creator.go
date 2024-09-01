@@ -2,11 +2,10 @@ package hypersyncgo
 
 import (
 	"context"
-	"math/big"
-
+	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/markovichecha/hypersync-client-go/types"
 	"github.com/pkg/errors"
+	"math/big"
 )
 
 type ContractCreatorResponse struct {

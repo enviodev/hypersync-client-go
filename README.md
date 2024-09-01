@@ -1,5 +1,5 @@
-[![Tests Status](https://github.com/markovichecha/hypersync-client-go/actions/workflows/test.yml/badge.svg)](https://github.com/markovichecha/hypersync-client-go/actions/workflows/test.yml)
-[![Security Status](https://github.com/markovichecha/hypersync-client-go/actions/workflows/gosec.yml/badge.svg)](https://github.com/markovichecha/hypersync-client-go/actions/workflows/gosec.yml)
+[![Tests Status](https://github.com/enviodev/hypersync-client-go/actions/workflows/test.yml/badge.svg)](https://github.com/enviodev/hypersync-client-go/actions/workflows/test.yml)
+[![Security Status](https://github.com/enviodev/hypersync-client-go/actions/workflows/gosec.yml/badge.svg)](https://github.com/enviodev/hypersync-client-go/actions/workflows/gosec.yml)
 [![Coverage Status](https://coveralls.io/repos/github/enviodev/hypersync-client-go/badge.svg?branch=main)](https://coveralls.io/github/enviodev/hypersync-client-go?branch=main)
 
 # HyperSync Go Client
@@ -15,7 +15,7 @@ Golang client for Envio's HyperSync, HyperRPC and HyperCURL clients.
 ## Installation
 
 ```bash
-go get github.com/markovichecha/hypersync-client-go
+go get github.com/enviodev/hypersync-client-go
 ```
 
 ## Examples

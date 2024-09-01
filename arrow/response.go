@@ -1,9 +1,8 @@
 package arrowhs
 
 import (
+	"github.com/enviodev/hypersync-client-go/types"
 	"math/big"
-
-	"github.com/markovichecha/hypersync-client-go/types"
 )
 
 // QueryResponseInterface defines the interface for handling query response data.
