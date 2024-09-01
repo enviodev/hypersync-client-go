@@ -1,9 +1,10 @@
 package options
 
 import (
-	"github.com/enviodev/hypersync-client-go/utils"
-	"go.uber.org/zap/zapcore"
 	"time"
+
+	"github.com/markovichecha/hypersync-client-go/utils"
+	"go.uber.org/zap/zapcore"
 )
 
 // Options represents the configuration options for network nodes.

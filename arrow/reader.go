@@ -2,16 +2,17 @@ package arrowhs
 
 import (
 	"bytes"
-	"capnproto.org/go/capnp/v3"
 	"fmt"
-	"github.com/apache/arrow/go/v10/arrow"
-	"github.com/apache/arrow/go/v10/arrow/ipc"
-	hypersynccapnp "github.com/enviodev/hypersync-client-go/capnp"
-	"github.com/enviodev/hypersync-client-go/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/pkg/errors"
 	"io"
 	"math/big"
+
+	"capnproto.org/go/capnp/v3"
+	"github.com/apache/arrow/go/v10/arrow"
+	"github.com/apache/arrow/go/v10/arrow/ipc"
+	"github.com/ethereum/go-ethereum/common"
+	hypersynccapnp "github.com/markovichecha/hypersync-client-go/capnp"
+	"github.com/markovichecha/hypersync-client-go/types"
+	"github.com/pkg/errors"
 )
 
 // Reader is responsible for reading and processing query responses.

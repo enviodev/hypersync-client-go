@@ -3,9 +3,10 @@ package hypersyncgo
 import (
 	"context"
 	"fmt"
-	"github.com/enviodev/hypersync-client-go/options"
-	"github.com/enviodev/hypersync-client-go/types"
 	"math/big"
+
+	"github.com/markovichecha/hypersync-client-go/options"
+	"github.com/markovichecha/hypersync-client-go/types"
 )
 
 func (c *Client) StreamBlocksInRange(ctx context.Context, fromBlock *big.Int, toBlock *big.Int, opts *options.StreamOptions) (*Stream, error) {

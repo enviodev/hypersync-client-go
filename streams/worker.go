@@ -2,15 +2,16 @@ package streams
 
 import (
 	"context"
-	errorshs "github.com/enviodev/hypersync-client-go/errors"
-	"github.com/enviodev/hypersync-client-go/logger"
-	"github.com/enviodev/hypersync-client-go/options"
-	"github.com/enviodev/hypersync-client-go/types"
+	"math/big"
+	"sync"
+
+	errorshs "github.com/markovichecha/hypersync-client-go/errors"
+	"github.com/markovichecha/hypersync-client-go/logger"
+	"github.com/markovichecha/hypersync-client-go/options"
+	"github.com/markovichecha/hypersync-client-go/types"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
-	"math/big"
-	"sync"
 )
 
 // WorkerFn defines a generic function type that takes a descriptor of type T and returns

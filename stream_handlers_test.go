@@ -2,16 +2,17 @@ package hypersyncgo
 
 import (
 	"context"
-	"github.com/enviodev/hypersync-client-go/logger"
-	"github.com/enviodev/hypersync-client-go/options"
-	"github.com/enviodev/hypersync-client-go/types"
-	"github.com/enviodev/hypersync-client-go/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 	"math/big"
 	"testing"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/markovichecha/hypersync-client-go/logger"
+	"github.com/markovichecha/hypersync-client-go/options"
+	"github.com/markovichecha/hypersync-client-go/types"
+	"github.com/markovichecha/hypersync-client-go/utils"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 )
 
 func TestGetBlocksInRange(t *testing.T) {

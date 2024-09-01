@@ -2,12 +2,13 @@ package hypersyncgo
 
 import (
 	"context"
-	"github.com/enviodev/hypersync-client-go/options"
-	"github.com/enviodev/hypersync-client-go/utils"
+	"testing"
+
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/markovichecha/hypersync-client-go/options"
+	"github.com/markovichecha/hypersync-client-go/utils"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"testing"
 )
 
 func TestHyperSync(t *testing.T) {

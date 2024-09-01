@@ -1,4 +1,4 @@
-module github.com/enviodev/hypersync-client-go
+module github.com/markovichecha/hypersync-client-go
 
 go 1.23
 
