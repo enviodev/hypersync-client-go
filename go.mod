@@ -2,6 +2,8 @@ module github.com/enviodev/hypersync-client-go
 
 go 1.23
 
+toolchain go1.23.1
+
 require (
 	capnproto.org/go/capnp/v3 v3.0.1-alpha.2
 	github.com/apache/arrow/go/v10 v10.0.1
@@ -47,10 +49,10 @@ require (
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
-	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/crypto v0.27.0 // indirect
 	golang.org/x/exp v0.0.0-20240604190554-fc45aab8b7f8 // indirect
 	golang.org/x/mod v0.18.0 // indirect
-	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/tools v0.22.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

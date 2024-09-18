@@ -2,6 +2,8 @@ package hypersyncgo
 
 import (
 	"context"
+	"github.com/enviodev/hypersync-client-go/contracts"
+	"github.com/enviodev/hypersync-client-go/decoder"
 	"github.com/enviodev/hypersync-client-go/logger"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
@@ -197,6 +199,11 @@ func TestGetLogsInRange(t *testing.T) {
 	require.NotNil(t, zLog)
 	logger.SetGlobalLogger(zLog)
 
+	// Load contracts manager here so we can decode logs on the fly...
+	cManager, cErr := contracts.NewManagerWithDefaults()
+	require.NoError(t, cErr)
+	require.NotNil(t, cManager)
+
 	testCases := []struct {
 		name      string
 		opts      options.Options
@@ -229,7 +236,7 @@ func TestGetLogsInRange(t *testing.T) {
 		}{
 			{
 				start: big.NewInt(20000000),
-				end:   big.NewInt(20000100),
+				end:   big.NewInt(20000020),
 				selections: []types.LogSelection{
 					{
 						Topics: [][]common.Hash{
@@ -258,6 +265,11 @@ func TestGetLogsInRange(t *testing.T) {
 			require.True(t, found)
 			require.NotNil(t, client)
 
+			// Should go into hyper itself but lets do it like this for now...
+			contract, cdErr := cManager.GetByStandard(testCase.networkId, utils.Erc20)
+			require.Nil(t, cdErr)
+			require.NotNil(t, contract)
+
 			for _, r := range testCase.ranges {
 				bStream, bsErr := client.StreamLogsInRange(ctx, r.start, r.end, r.selections, r.options)
 				require.Nil(t, bsErr)
@@ -270,10 +282,16 @@ func TestGetLogsInRange(t *testing.T) {
 						require.NotNil(t, cErr)
 					case <-bStream.Done():
 						t.Log("Stream successfully resolved!")
-						//require.Nil(t, bStream.Unsubscribe())
 						return
 					case response := <-bStream.Channel():
 						t.Logf("Got response from StreamLogsInRange NextBlock: %d", response.NextBlock)
+
+						for _, log := range response.GetLogs() {
+							dLog, dlErr := decoder.DecodeEthereumLogWithContract(log, contract)
+							require.Nil(t, dlErr)
+							require.NotNil(t, dLog)
+						}
+
 						bStream.Ack()
 					case <-time.After(15 * time.Second):
 						//require.Nil(t, bStream.Unsubscribe())

@@ -38,6 +38,45 @@ type Log struct {
 	Topic3 *common.Hash `json:"topic3,omitempty"`
 }
 
+func (l *Log) Topics() []common.Hash {
+	toReturn := make([]common.Hash, 0)
+	if l.Topic0 != nil {
+		toReturn = append(toReturn, *l.Topic0)
+	}
+	if l.Topic1 != nil {
+		toReturn = append(toReturn, *l.Topic1)
+	}
+	if l.Topic2 != nil {
+		toReturn = append(toReturn, *l.Topic2)
+	}
+	if l.Topic3 != nil {
+		toReturn = append(toReturn, *l.Topic3)
+	}
+	return toReturn
+}
+
+func (l *Log) TxIndex() uint {
+	if l.TransactionIndex == nil {
+		return 0
+	}
+	return uint(*l.TransactionIndex)
+}
+
+func (l *Log) Index() uint {
+	if l.LogIndex == nil {
+		return 0
+	}
+	return uint(*l.LogIndex)
+}
+
+func (l *Log) GetData() []byte {
+	if l.Data == nil {
+		return []byte{}
+	}
+
+	return *l.Data
+}
+
 func NewLogFromRecord(schema *arrow.Schema, record arrow.Record) (*Log, error) {
 	if record.NumCols() != int64(len(schema.Fields())) {
 		return nil, errors.New("number of columns in record does not match schema")
