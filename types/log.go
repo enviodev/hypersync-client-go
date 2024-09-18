@@ -69,6 +69,14 @@ func (l *Log) Index() uint {
 	return uint(*l.LogIndex)
 }
 
+func (l *Log) GetData() []byte {
+	if l.Data == nil {
+		return []byte{}
+	}
+
+	return *l.Data
+}
+
 func NewLogFromRecord(schema *arrow.Schema, record arrow.Record) (*Log, error) {
 	if record.NumCols() != int64(len(schema.Fields())) {
 		return nil, errors.New("number of columns in record does not match schema")
