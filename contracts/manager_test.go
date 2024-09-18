@@ -42,7 +42,7 @@ func TestBasicManager(t *testing.T) {
 			expectErr:    false,
 		},
 		{
-			id:           2,
+			id:           1,
 			name:         "Duplicate contract registration",
 			networkID:    utils.NetworkID(1),
 			addr:         "0x1234567890abcdef1234567890abcdef12345678",
