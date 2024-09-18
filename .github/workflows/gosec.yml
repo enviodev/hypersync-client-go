@@ -4,8 +4,8 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     env:
-      GOSECGOVERSION: "go1.22.4"
-      GOTOOLCHAIN: "go1.22.4"
+      GOSECGOVERSION: "go1.23.1"
+      GOTOOLCHAIN: "go1.23.1"
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
@@ -13,7 +13,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.4'
+          go-version: '1.23.1'
 
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master

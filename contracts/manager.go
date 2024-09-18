@@ -115,6 +115,33 @@ func (m *Manager) GetByID(network utils.NetworkID, id uint64) (*Contract, error)
 	return nil, fmt.Errorf("requested contract could not be found for network: %d, id: %d", network, id)
 }
 
+// GetByStandard retrieves the contract for the given network ID and associated contract standard.
+// It returns an error if no contract is registered for the given network.
+//
+// Example:
+//
+//	contract, err := manager.GetByStandard(networkID, utils.Erc20)
+//	if err != nil {
+//	    log.Fatalf("Failed to get contract: %v", err)
+//	}
+func (m *Manager) GetByStandard(network utils.NetworkID, standard utils.Standard) (*Contract, error) {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	contracts, exists := m.registry[network]
+	if !exists || len(contracts) == 0 {
+		return nil, errors.Errorf("no contracts registered for network: %d", network)
+	}
+
+	for _, contract := range contracts {
+		if contract.standard == standard {
+			return contract, nil
+		}
+	}
+
+	return nil, fmt.Errorf("requested contract could not be found for network: %d, standard: %d", network, standard)
+}
+
 // List returns a copy of all registered contracts in the registry.
 //
 // Example:

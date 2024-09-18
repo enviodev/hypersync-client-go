@@ -43,7 +43,7 @@ type EthereumLog struct {
 //	if err != nil {
 //	    log.Fatalf("Failed to decode log: %v", err)
 //	}
-func DecodeEthereumLogWithContract(log *types.Log, contract *contracts.Contract) (*EthereumLog, error) {
+func DecodeEthereumLogWithContract(log types.Log, contract *contracts.Contract) (*EthereumLog, error) {
 	return DecodeEthereumLog(log, contract.RawABI())
 }
 
@@ -58,8 +58,8 @@ func DecodeEthereumLogWithContract(log *types.Log, contract *contracts.Contract)
 //	if err != nil {
 //	    log.Fatalf("Failed to decode log: %v", err)
 //	}
-func DecodeEthereumLog(log *types.Log, aData string) (*EthereumLog, error) {
-	if log == nil || len(log.Topics()) < 1 {
+func DecodeEthereumLog(log types.Log, aData string) (*EthereumLog, error) {
+	if len(log.Topics()) < 1 {
 		return nil, errors.New("log is nil or has no topics")
 	}
 
@@ -75,8 +75,10 @@ func DecodeEthereumLog(log *types.Log, aData string) (*EthereumLog, error) {
 	}
 
 	data := make(map[string]any)
-	if uErr := event.Inputs.UnpackIntoMap(data, log.GetData()); uErr != nil {
-		return nil, errors.Wrap(uErr, "failed to unpack inputs into map")
+	if len(log.GetData()) > 0 {
+		if uErr := event.Inputs.UnpackIntoMap(data, log.GetData()); uErr != nil {
+			return nil, errors.Wrap(uErr, "failed to unpack inputs into map")
+		}
 	}
 
 	// Identify and decode indexed inputs
