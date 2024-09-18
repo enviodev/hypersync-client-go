@@ -1,8 +1,8 @@
 package decoder
 
 import (
-	"bytes"
 	"fmt"
+	"github.com/enviodev/hypersync-client-go/contracts"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -32,18 +32,39 @@ type EthereumLog struct {
 	Topics       []EthereumTopic `json:"topics"`        // Decoded topics of the event.
 }
 
-type EthereumProvider struct{}
+// DecodeEthereumLogWithContract decodes an Ethereum event log using the provided contract's ABI.
+// It returns an EthereumLog instance containing the decoded event details such as the event name, data, and topics.
+//
+// Example:
+//
+//	log := &types.Log{}
+//	contract := &contracts.Contract{}
+//	decodedLog, err := DecodeEthereumLogWithContract(log, contract)
+//	if err != nil {
+//	    log.Fatalf("Failed to decode log: %v", err)
+//	}
+func DecodeEthereumLogWithContract(log *types.Log, contract *contracts.Contract) (*EthereumLog, error) {
+	return DecodeEthereumLog(log, contract.RawABI())
+}
 
-// DecodeLog decodes an Ethereum event log using the provided ABI data. It returns a Log
-// instance containing the decoded event name, data, and topics. The function requires the event log
-// and its ABI as inputs. It handles errors such as missing topics or failure to parse the ABI.
-func (p *EthereumProvider) DecodeLog(log *types.Log, abiData []byte) (*EthereumLog, error) {
+// DecodeEthereumLog decodes an Ethereum event log using the provided ABI data.
+// It returns an EthereumLog instance containing the decoded event name, data, and topics.
+//
+// Example:
+//
+//	log := &types.Log{}
+//	abiData := "<ABI JSON string>"
+//	decodedLog, err := DecodeEthereumLog(log, abiData)
+//	if err != nil {
+//	    log.Fatalf("Failed to decode log: %v", err)
+//	}
+func DecodeEthereumLog(log *types.Log, aData string) (*EthereumLog, error) {
 	if log == nil || len(log.Topics()) < 1 {
 		return nil, errors.New("log is nil or has no topics")
 	}
 
 	topics := log.Topics()
-	logABI, err := abi.JSON(bytes.NewReader(abiData))
+	logABI, err := abi.JSON(strings.NewReader(aData))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse abi")
 	}
@@ -102,7 +123,15 @@ func (p *EthereumProvider) DecodeLog(log *types.Log, abiData []byte) (*EthereumL
 
 // decodeTopic decodes a single topic from an Ethereum event log based on its ABI argument type.
 // It supports various data types including addresses, booleans, integers, strings, bytes, and more.
-// This function is internal and used within DecodeLogFromAbi to process each topic individually.
+//
+// Example:
+//
+//	topic := common.Hash{}
+//	argument := abi.Argument{}
+//	decodedTopic, err := decodeTopic(topic, argument)
+//	if err != nil {
+//	    log.Fatalf("Failed to decode topic: %v", err)
+//	}
 func decodeTopic(topic common.Hash, argument abi.Argument) (interface{}, error) {
 	switch argument.Type.T {
 	case abi.AddressTy:
