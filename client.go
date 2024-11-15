@@ -209,7 +209,7 @@ func DoArrow[R any](ctx context.Context, c *Client, url string, method string, p
 		responseData, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(responseData))
 	}
-
+	
 	arrowReader, err := arrowhs.NewQueryResponseReader(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not parse the ipc/arrow response while attempting to read")

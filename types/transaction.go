@@ -92,6 +92,10 @@ type Transaction struct {
 	GasUsedForL1 *uint64 `json:"gas_used_for_l1,omitempty"`
 }
 
+func (t *Transaction) Data() []byte {
+	return *t.Input
+}
+
 func NewTransactionFromRecord(schema *arrow.Schema, record arrow.Record) (*Transaction, error) {
 	if record.NumCols() != int64(len(schema.Fields())) {
 		return nil, errors.New("number of columns in record does not match schema")
@@ -104,6 +108,7 @@ func NewTransactionFromRecord(schema *arrow.Schema, record arrow.Record) (*Trans
 		if col.Len() == 0 {
 			continue
 		}
+
 		switch field.Name {
 		case "block_hash":
 			if fCol, ok := col.(*array.Binary); ok {
