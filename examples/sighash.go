@@ -70,6 +70,8 @@ func main() {
 			{
 				SigHash: []types.SigHash{
 					types.NewSigHashFromHex("ad718d2a"),
+					types.NewSigHashFromHex("7d112a95"),
+					types.NewSigHashFromHex("6a761202"),
 				},
 			},
 		},
@@ -135,6 +137,32 @@ func main() {
 					zap.Any("number", block.Number),
 					zap.Any("hash", block.Hash),
 					zap.Any("timestamp", block.Timestamp),
+				)
+			}
+
+			for _, txn := range response.GetTransactions() {
+				logger.L().Info(
+					"Transaction information",
+					zap.Any("from", txn.From),
+					zap.Any("to", txn.To),
+					zap.Any("value", txn.Value),
+					zap.Any("input", txn.Input),
+					zap.Any("block_number", txn.BlockNumber),
+					zap.Any("block_hash", txn.BlockHash),
+					zap.Any("hash", txn.Hash),
+					zap.Any("sighash", txn.SigHash),
+				)
+			}
+
+			for _, log := range response.GetLogs() {
+				logger.L().Info(
+					"Log information",
+					zap.Any("address", log.Address),
+					zap.Any("data", log.Data),
+					zap.Any("topics", log.Topics()),
+					zap.Any("block_number", log.BlockNumber),
+					zap.Any("block_hash", log.BlockHash),
+					zap.Any("transaction_hash", log.TransactionHash),
 				)
 			}
 
