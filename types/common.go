@@ -1,9 +1,11 @@
 package types
 
 import (
+	"fmt"
+	"math/big"
+
 	"github.com/apache/arrow/go/v10/arrow"
 	"github.com/ethereum/go-ethereum/common"
-	"math/big"
 )
 
 type DataType uint8
@@ -17,6 +19,28 @@ const (
 )
 
 type SigHash [4]byte
+
+func NewSigHashFromHex(hex string) SigHash {
+	return SigHash(common.Hex2Bytes(hex))
+}
+
+func (s SigHash) MarshalJSON() ([]byte, error) {
+	return []byte(`"0x` + common.Bytes2Hex(s[:]) + `"`), nil
+}
+
+func (s *SigHash) UnmarshalJSON(data []byte) error {
+	if len(data) < 2 || data[0] != '"' || data[len(data)-1] != '"' {
+		return fmt.Errorf("invalid hex string")
+	}
+	hexStr := string(data[1 : len(data)-1])
+	bytes := common.Hex2Bytes(hexStr)
+	if len(bytes) != 4 {
+		return fmt.Errorf("invalid sighash length: expected 4 bytes, got %d", len(bytes))
+	}
+	copy(s[:], bytes)
+	return nil
+}
+
 type Address string
 type Hash string
 type LogArgument string

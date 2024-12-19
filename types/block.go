@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 	"math/big"
 	"time"
+	"encoding/binary"
+	"fmt"
 )
 
 // Block represents an Ethereum block object.
@@ -181,10 +183,18 @@ func NewBlockFromRecord(schema *arrow.Schema, record arrow.Record) (*Block, erro
 				toReturn.GasUsed = &val
 			}
 		case "timestamp":
-			if fCol, ok := col.(*array.Uint64); ok {
+			if fCol, ok := col.(*array.Binary); ok {
 				val := fCol.Value(0)
-				t := time.Unix(int64(val), 0)
+				// Convert the first 4 bytes into an int32 timestamp
+				timestampInt := int64(binary.BigEndian.Uint32(val))
+				t := time.Unix(timestampInt, 0)
 				toReturn.Timestamp = &t
+			} else if fCol, ok := col.(*array.Int64); ok {
+				val := fCol.Value(0)
+				t := time.Unix(val, 0)
+				toReturn.Timestamp = &t
+			} else {
+				return nil, fmt.Errorf("unsupported type for timestamp: %T", col)
 			}
 		case "uncles":
 			if fCol, ok := col.(*array.List); ok {
