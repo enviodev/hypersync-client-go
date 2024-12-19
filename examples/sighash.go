@@ -70,8 +70,6 @@ func main() {
 			{
 				SigHash: []types.SigHash{
 					types.NewSigHashFromHex("ad718d2a"),
-					types.NewSigHashFromHex("7d112a95"),
-					types.NewSigHashFromHex("6a761202"),
 				},
 			},
 		},
