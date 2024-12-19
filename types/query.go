@@ -88,6 +88,15 @@ func (qr *QueryResponse) GetBlocks() []Block {
 	return qr.Data.Blocks
 }
 
+func (qr *QueryResponse) GetBlockByNumber(number *big.Int) *Block {
+	for _, block := range qr.Data.Blocks {
+		if block.Number.Cmp(number) == 0 {
+			return &block
+		}
+	}
+	return nil
+}
+
 func (qr *QueryResponse) GetTransactions() []Transaction {
 	return qr.Data.Transactions
 }

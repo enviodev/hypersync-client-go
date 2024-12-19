@@ -85,7 +85,7 @@ func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.Query
 	base := c.opts.RetryBaseMs
 
 	c.opts.RetryBackoffMs = time.Duration(100)
-	c.opts.MaxNumRetries = 0
+	c.opts.MaxNumRetries = 3
 
 	var lastErr error
 	for i := 0; i < c.opts.MaxNumRetries+1; i++ {
