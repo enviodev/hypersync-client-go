@@ -1,15 +1,16 @@
 package types
 
 import (
+	"encoding/binary"
+	"fmt"
+	"math/big"
+	"time"
+
 	"github.com/apache/arrow/go/v10/arrow"
 	"github.com/apache/arrow/go/v10/arrow/array"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/pkg/errors"
-	"math/big"
-	"time"
-	"encoding/binary"
-	"fmt"
 )
 
 // Block represents an Ethereum block object.
@@ -185,6 +186,14 @@ func NewBlockFromRecord(schema *arrow.Schema, record arrow.Record) (*Block, erro
 		case "timestamp":
 			if fCol, ok := col.(*array.Binary); ok {
 				val := fCol.Value(0)
+
+				// There might be instances where there are less than 4 bytes
+				// pad out the remaining 4 bytes
+				if len(val) < 4 {
+					pad := make([]byte, 4-len(val))
+					val = append(pad, val...)
+				}
+
 				// Convert the first 4 bytes into an int32 timestamp
 				timestampInt := int64(binary.BigEndian.Uint32(val))
 				t := time.Unix(timestampInt, 0)
