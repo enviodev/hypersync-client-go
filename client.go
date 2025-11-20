@@ -8,6 +8,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/pkg/errors"
 	"io"
 	"math/rand"
@@ -25,11 +26,15 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
-	// TODO: What if user does not require rpcClient at all?
-	rpcClient, err := ethclient.DialContext(ctx, opts.RpcEndpoint)
+	if opts.BearerToken == nil || *opts.BearerToken == "" {
+		return nil, errors.New("bearer token is mandatory as of ")
+	}
+
+	rpc, err := rpc.DialOptions(ctx, opts.RpcEndpoint, rpc.WithHeader("Authorization", "Bearer "+*opts.BearerToken))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to RPC client")
 	}
+	client := ethclient.NewClient(rpc)
 
 	return &Client{
 		ctx:  ctx,
@@ -47,7 +52,7 @@ func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 				ExpectContinueTimeout: 1 * time.Second,
 			},
 		},
-		rpcClient: rpcClient,
+		rpcClient: client,
 	}, nil
 }
 

@@ -2,13 +2,22 @@ package hypersyncgo
 
 import (
 	"context"
+	"os"
+	"testing"
+
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"testing"
 )
+
+func getEnvPtr(key string) *string {
+	if val := os.Getenv(key); val != "" {
+		return &val
+	}
+	return nil
+}
 
 func TestHyperSync(t *testing.T) {
 	testCases := []struct {
@@ -26,6 +35,7 @@ func TestHyperSync(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
+					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
 				},
 			},
 		},
