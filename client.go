@@ -64,6 +64,20 @@ func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string 
 	return strings.Join(paths, "/")
 }
 
+func (c *Client) NewRequest(ctx context.Context, method, url string, reqPayload []byte) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create new request")
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	if c.opts.BearerToken != nil && *c.opts.BearerToken != "" {
+		req.Header.Set("Authorization", "Bearer "+*c.opts.BearerToken)
+	}
+
+	return req, nil
+}
+
 func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (*Stream, error) {
 	stream, err := NewStream(ctx, c, query, opts)
 	if err != nil {
@@ -118,12 +132,10 @@ func DoQuery[R any, T any](ctx context.Context, c *Client, method string, payloa
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, nodeUrl, strings.NewReader(string(reqPayload)))
+	req, err := c.NewRequest(ctx, method, nodeUrl, reqPayload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
-
-	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -155,12 +167,10 @@ func Do[R any, T any](ctx context.Context, c *Client, url string, method string,
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
+	req, err := c.NewRequest(ctx, method, url, reqPayload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
-
-	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -192,12 +202,10 @@ func DoArrow[R any](ctx context.Context, c *Client, url string, method string, p
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
+	req, err := c.NewRequest(ctx, method, url, reqPayload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
-
-	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -209,7 +217,7 @@ func DoArrow[R any](ctx context.Context, c *Client, url string, method string, p
 		responseData, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(responseData))
 	}
-	
+
 	arrowReader, err := arrowhs.NewQueryResponseReader(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not parse the ipc/arrow response while attempting to read")
