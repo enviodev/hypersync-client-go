@@ -2,12 +2,13 @@ package hypersyncgo
 
 import (
 	"context"
+	"math/big"
+	"testing"
+
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"math/big"
-	"testing"
 )
 
 func TestHeaderByNumber(t *testing.T) {
@@ -25,6 +26,7 @@ func TestHeaderByNumber(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
+					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
 				},
 			},
 		},
@@ -69,6 +71,7 @@ func TestBlockByNumber(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
+					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
 				},
 			},
 		},

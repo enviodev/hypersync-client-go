@@ -8,6 +8,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/pkg/errors"
 	"io"
 	"math/rand"
@@ -25,11 +26,15 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
-	// TODO: What if user does not require rpcClient at all?
-	rpcClient, err := ethclient.DialContext(ctx, opts.RpcEndpoint)
+	if opts.BearerToken == nil || *opts.BearerToken == "" {
+		return nil, errors.New("bearer token is mandatory as of ")
+	}
+
+	rpc, err := rpc.DialOptions(ctx, opts.RpcEndpoint, rpc.WithHeader("Authorization", "Bearer "+*opts.BearerToken))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to RPC client")
 	}
+	client := ethclient.NewClient(rpc)
 
 	return &Client{
 		ctx:  ctx,
@@ -47,7 +52,7 @@ func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 				ExpectContinueTimeout: 1 * time.Second,
 			},
 		},
-		rpcClient: rpcClient,
+		rpcClient: client,
 	}, nil
 }
 
@@ -62,6 +67,20 @@ func (c *Client) GetQueryUrlFromNode(node options.Node) string {
 func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string {
 	paths := append([]string{node.Endpoint}, path...)
 	return strings.Join(paths, "/")
+}
+
+func (c *Client) NewRequest(ctx context.Context, method, url string, reqPayload []byte) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create new request")
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	if c.opts.BearerToken != nil && *c.opts.BearerToken != "" {
+		req.Header.Set("Authorization", "Bearer "+*c.opts.BearerToken)
+	}
+
+	return req, nil
 }
 
 func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (*Stream, error) {
@@ -118,12 +137,10 @@ func DoQuery[R any, T any](ctx context.Context, c *Client, method string, payloa
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, nodeUrl, strings.NewReader(string(reqPayload)))
+	req, err := c.NewRequest(ctx, method, nodeUrl, reqPayload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
-
-	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -155,12 +172,10 @@ func Do[R any, T any](ctx context.Context, c *Client, url string, method string,
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
+	req, err := c.NewRequest(ctx, method, url, reqPayload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
-
-	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -192,12 +207,10 @@ func DoArrow[R any](ctx context.Context, c *Client, url string, method string, p
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
+	req, err := c.NewRequest(ctx, method, url, reqPayload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
-
-	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -209,7 +222,7 @@ func DoArrow[R any](ctx context.Context, c *Client, url string, method string, p
 		responseData, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(responseData))
 	}
-	
+
 	arrowReader, err := arrowhs.NewQueryResponseReader(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not parse the ipc/arrow response while attempting to read")

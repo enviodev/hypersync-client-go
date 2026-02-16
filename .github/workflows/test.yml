@@ -13,5 +13,7 @@ jobs:
           go-version: '1.22.4'
 
       - name: Run Tests
+        env:
+          HYPERSYNC_BEARER_TOKEN: ${{ secrets.HYPERSYNC_BEARER_TOKEN }}
         run: |
           go test ./... -v
