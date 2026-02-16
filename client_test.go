@@ -27,6 +27,7 @@ func TestClients(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
+					BearerToken: "test-token",
 				},
 			},
 		},

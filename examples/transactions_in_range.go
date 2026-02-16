@@ -12,6 +12,7 @@ import (
 	"github.com/enviodev/hypersync-client-go/utils"
 	"go.uber.org/zap"
 	"math/big"
+	"os"
 	"time"
 )
 
@@ -23,6 +24,7 @@ func main() {
 				NetworkId:   utils.EthereumNetworkID,
 				Endpoint:    "https://eth.hypersync.xyz",
 				RpcEndpoint: "https://eth.rpc.hypersync.xyz",
+				BearerToken: os.Getenv("HYPERSYNC_BEARER_TOKEN"),
 			},
 		},
 	}
