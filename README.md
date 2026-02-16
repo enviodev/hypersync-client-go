@@ -18,6 +18,28 @@ Golang client for Envio's HyperSync, HyperRPC and HyperCURL clients.
 go get github.com/enviodev/hypersync-client-go
 ```
 
+## Authentication
+
+A **bearer token is required** to use the HyperSync client. The token is sent as an `Authorization: Bearer <token>` header on all HTTP requests to the HyperSync server.
+
+Set the `BearerToken` field when configuring a node:
+
+```go
+opts := options.Options{
+    Blockchains: []options.Node{
+        {
+            Type:        utils.EthereumNetwork,
+            NetworkId:   utils.EthereumNetworkID,
+            Endpoint:    "https://eth.hypersync.xyz",
+            RpcEndpoint: "https://eth.rpc.hypersync.xyz",
+            BearerToken: os.Getenv("HYPERSYNC_BEARER_TOKEN"),
+        },
+    },
+}
+```
+
+Client creation will fail if `BearerToken` is empty.
+
 ## Examples
 
 See more at [Examples](./examples) directory.

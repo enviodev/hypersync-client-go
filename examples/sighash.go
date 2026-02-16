@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"math/big"
+	"os"
 	"time"
 
 	hypersyncgo "github.com/enviodev/hypersync-client-go"
@@ -25,6 +26,7 @@ func main() {
 				NetworkId:   utils.EthereumNetworkID,
 				Endpoint:    "https://arbitrum.hypersync.xyz",
 				RpcEndpoint: "https://arbitrum.rpc.hypersync.xyz",
+				BearerToken: os.Getenv("HYPERSYNC_BEARER_TOKEN"),
 			},
 		},
 	}

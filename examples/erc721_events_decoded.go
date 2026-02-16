@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"math/big"
+	"os"
 	"time"
 
 	hypersyncgo "github.com/enviodev/hypersync-client-go"
@@ -28,6 +29,7 @@ func main() {
 				NetworkId:   utils.EthereumNetworkID,
 				Endpoint:    "https://eth.hypersync.xyz",
 				RpcEndpoint: "https://eth.rpc.hypersync.xyz",
+				BearerToken: os.Getenv("HYPERSYNC_BEARER_TOKEN"),
 			},
 		},
 	}
