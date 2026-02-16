@@ -18,9 +18,24 @@ Golang client for Envio's HyperSync, HyperRPC and HyperCURL clients.
 go get github.com/enviodev/hypersync-client-go
 ```
 
+## Authentication
+
+The HyperSync API requires an **API token** for all requests. You must set `ApiToken` on each `options.Node` when creating a client. Token and endpoint are validated at client creation; missing or empty token will return an error.
+
+```go
+node := options.Node{
+    Endpoint:    "https://eth.hypersync.xyz",
+    RpcEndpoint: "https://eth.rpc.hypersync.xyz",
+    ApiToken:    os.Getenv("HYPERSYNC_API_TOKEN"), // required
+}
+client, err := hypersyncgo.NewClient(ctx, node)
+```
+
+For examples and CI, use the `HYPERSYNC_API_TOKEN` environment variable (and set it in GitHub Actions secrets for integration tests).
+
 ## Examples
 
-See more at [Examples](./examples) directory.
+See more at [Examples](./examples) directory. Examples read the API token from `HYPERSYNC_API_TOKEN`.
 
 
 ## LICENSE

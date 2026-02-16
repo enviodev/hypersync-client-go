@@ -28,7 +28,7 @@ func TestGetHeight(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},

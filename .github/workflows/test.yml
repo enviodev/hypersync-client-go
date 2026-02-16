@@ -14,6 +14,8 @@ jobs:
 
       - name: Run Tests
         env:
-          HYPERSYNC_BEARER_TOKEN: ${{ secrets.HYPERSYNC_BEARER_TOKEN }}
+          # Optional: set HYPERSYNC_API_TOKEN in repo secrets for tests that call the real HyperSync API.
+          # Unit tests use a placeholder when unset; integration-style tests may 401 without a real token.
+          HYPERSYNC_API_TOKEN: ${{ secrets.HYPERSYNC_API_TOKEN }}
         run: |
           go test ./... -v

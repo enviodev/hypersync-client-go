@@ -9,8 +9,17 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	"math/big"
+	"os"
 	"testing"
 )
+
+// getTestApiToken returns the API token for tests. Use HYPERSYNC_API_TOKEN in CI for real API calls.
+func getTestApiToken() string {
+	if t := os.Getenv("HYPERSYNC_API_TOKEN"); t != "" {
+		return t
+	}
+	return "test-token"
+}
 
 func TestClients(t *testing.T) {
 	testCases := []struct {
@@ -27,7 +36,7 @@ func TestClients(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},

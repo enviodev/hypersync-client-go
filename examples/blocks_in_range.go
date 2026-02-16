@@ -5,23 +5,15 @@ package main
 
 import (
 	"context"
-	"math/big"
-	"os"
-	"time"
-
 	"github.com/enviodev/hypersync-client-go"
 	"github.com/enviodev/hypersync-client-go/logger"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"go.uber.org/zap"
+	"math/big"
+	"os"
+	"time"
 )
-
-func getEnvPtr(key string) *string {
-	if val := os.Getenv(key); val != "" {
-		return &val
-	}
-	return nil
-}
 
 func main() {
 	opts := options.Options{
@@ -31,7 +23,7 @@ func main() {
 				NetworkId:   utils.EthereumNetworkID,
 				Endpoint:    "https://eth.hypersync.xyz",
 				RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-				BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+				ApiToken:    os.Getenv("HYPERSYNC_API_TOKEN"),
 			},
 		},
 	}
