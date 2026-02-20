@@ -93,11 +93,4 @@ Other examples:
 - `go run ./examples/traces_in_range.go`
 - `go run ./examples/transactions_in_range.go`
 
-```
-
 Example files use `//go:build ignore` so they are not built with the main module. Running them with `go run ./examples/<name>.go` still compiles and runs that file.
-
-## LICENSE
-
-copyright goes here...
-```

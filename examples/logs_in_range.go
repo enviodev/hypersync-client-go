@@ -9,10 +9,6 @@ import (
 	"os"
 	"time"
 
-	"math/big"
-	"os"
-	"time"
-
 	hypersyncgo "github.com/enviodev/hypersync-client-go"
 	"github.com/enviodev/hypersync-client-go/logger"
 	"github.com/enviodev/hypersync-client-go/options"
