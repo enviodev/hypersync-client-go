@@ -10,12 +10,12 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.4'
+          go-version: "1.22.4"
 
       - name: Run Tests
         env:
-          # Optional: set HYPERSYNC_API_TOKEN in repo secrets for tests that call the real HyperSync API.
+          # Optional: set ENVIO_API_TOKEN in repo secrets for tests that call the real HyperSync API.
           # Unit tests use a placeholder when unset; integration-style tests may 401 without a real token.
-          HYPERSYNC_API_TOKEN: ${{ secrets.HYPERSYNC_API_TOKEN }}
+          ENVIO_API_TOKEN: ${{ secrets.ENVIO_API_TOKEN }}
         run: |
           go test ./... -v

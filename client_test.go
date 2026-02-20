@@ -2,20 +2,21 @@ package hypersyncgo
 
 import (
 	"context"
+	"math/big"
+	"os"
+	"testing"
+
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"math/big"
-	"os"
-	"testing"
 )
 
-// getTestApiToken returns the API token for tests. Use HYPERSYNC_API_TOKEN in CI for real API calls.
+// getTestApiToken returns the API token for tests. Use ENVIO_API_TOKEN in CI for real API calls.
 func getTestApiToken() string {
-	if t := os.Getenv("HYPERSYNC_API_TOKEN"); t != "" {
+	if t := os.Getenv("ENVIO_API_TOKEN"); t != "" {
 		return t
 	}
 	return "test-token"

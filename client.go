@@ -197,7 +197,7 @@ func Do[R any, T any](ctx context.Context, c *Client, url string, method string,
 	return &result, nil
 }
 
-func DoArrow[R any, T any](ctx context.Context, c *Client, url string, method string, payload R) (*types.QueryResponse, error) {
+func DoArrow[R any](ctx context.Context, c *Client, url string, method string, payload R) (*types.QueryResponse, error) {
 	reqPayload, err := json.Marshal(payload)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal envio payload")

@@ -9,6 +9,10 @@ import (
 	"os"
 	"time"
 
+	"math/big"
+	"os"
+	"time"
+
 	hypersyncgo "github.com/enviodev/hypersync-client-go"
 	"github.com/enviodev/hypersync-client-go/logger"
 	"github.com/enviodev/hypersync-client-go/options"
@@ -16,9 +20,6 @@ import (
 	"github.com/enviodev/hypersync-client-go/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"go.uber.org/zap"
-	"math/big"
-	"os"
-	"time"
 )
 
 func main() {
@@ -29,7 +30,7 @@ func main() {
 				NetworkId:   utils.EthereumNetworkID,
 				Endpoint:    "https://eth.hypersync.xyz",
 				RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-				ApiToken:    os.Getenv("HYPERSYNC_API_TOKEN"),
+				ApiToken:    os.Getenv("ENVIO_API_TOKEN"),
 			},
 		},
 	}
