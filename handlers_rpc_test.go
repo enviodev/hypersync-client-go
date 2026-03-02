@@ -12,6 +12,7 @@ import (
 )
 
 func TestHeaderByNumber(t *testing.T) {
+	skipWithoutApiToken(t)
 	testCases := []struct {
 		name         string
 		opts         options.Options
@@ -57,6 +58,7 @@ func TestHeaderByNumber(t *testing.T) {
 }
 
 func TestBlockByNumber(t *testing.T) {
+	skipWithoutApiToken(t)
 	testCases := []struct {
 		name         string
 		opts         options.Options

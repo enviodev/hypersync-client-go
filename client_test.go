@@ -22,7 +22,16 @@ func getTestApiToken() string {
 	return "test-token"
 }
 
+// skipWithoutApiToken skips integration tests when no real API token is available.
+func skipWithoutApiToken(t *testing.T) {
+	t.Helper()
+	if os.Getenv("ENVIO_API_TOKEN") == "" {
+		t.Skip("skipping integration test: ENVIO_API_TOKEN not set")
+	}
+}
+
 func TestClients(t *testing.T) {
+	skipWithoutApiToken(t)
 	testCases := []struct {
 		name    string
 		opts    options.Options

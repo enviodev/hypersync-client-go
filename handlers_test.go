@@ -13,6 +13,7 @@ import (
 )
 
 func TestGetHeight(t *testing.T) {
+	skipWithoutApiToken(t)
 	testCases := []struct {
 		name      string
 		opts      options.Options
