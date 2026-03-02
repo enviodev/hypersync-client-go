@@ -1,6 +1,9 @@
 package options
 
 import (
+	"fmt"
+	"math"
+
 	"github.com/enviodev/hypersync-client-go/utils"
 	"go.uber.org/zap/zapcore"
 	"time"
@@ -15,6 +18,11 @@ type Options struct {
 }
 
 func (o *Options) Validate() error {
+	for i, node := range o.Blockchains {
+		if err := node.Validate(); err != nil {
+			return fmt.Errorf("blockchain node [%d] (%s): %w", i, node.NetworkId, err)
+		}
+	}
 	return nil
 }
 
@@ -46,8 +54,9 @@ type Node struct {
 	// RpcEndpoint ...
 	RpcEndpoint string `mapstructure:"rpcEndpoint" yaml:"rpcEndpoint" json:"rpcEndpoint"`
 
-	// BearerToken is the HyperSync server bearer token.
-	BearerToken *string `mapstructure:"bearerToken" yaml:"bearerToken" json:"bearerToken"`
+	// ApiToken is the HyperSync API token (required). It is sent as an
+	// Authorization: Bearer header on all requests.
+	ApiToken string `mapstructure:"apiToken" yaml:"apiToken" json:"apiToken"`
 
 	// HTTPReqTimeoutMillis is the number of milliseconds to wait for a response before timing out.
 	HTTPReqTimeoutMs *time.Duration `mapstructure:"httpReqTimeoutMs" yaml:"httpReqTimeoutMs" json:"httpReqTimeoutMs"`
@@ -65,13 +74,28 @@ type Node struct {
 	RetryCeilingMs time.Duration `mapstructure:"retryCeilingMs" yaml:"retryCeilingMs" json:"retryCeilingMs"`
 }
 
+// Validate checks that all required Node fields are set.
+func (n *Node) Validate() error {
+	if n.ApiToken == "" {
+		return fmt.Errorf("api token is required")
+	}
+	if n.Endpoint == "" {
+		return fmt.Errorf("endpoint is required")
+	}
+	return nil
+}
+
 // GetType returns the type of the node.
 func (n *Node) GetType() utils.Network {
 	return n.Type
 }
 
 // GetNetworkID returns the network ID of the node.
+// Values larger than math.MaxInt64 are clamped to math.MaxInt64 to avoid integer overflow.
 func (n *Node) GetNetworkID() int64 {
+	if n.NetworkId > math.MaxInt64 {
+		return math.MaxInt64
+	}
 	return int64(n.NetworkId)
 }
 

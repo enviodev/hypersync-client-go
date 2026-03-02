@@ -17,6 +17,7 @@ import (
 )
 
 func TestGetBlocksInRange(t *testing.T) {
+	skipWithoutApiToken(t)
 	// Here just to test somewhere that logger is actually loaded...
 	zLog, err := logger.GetZapDevelopmentLogger(zap.NewAtomicLevelAt(zap.DebugLevel))
 	require.NoError(t, err)
@@ -42,7 +43,7 @@ func TestGetBlocksInRange(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},
@@ -102,6 +103,7 @@ func TestGetBlocksInRange(t *testing.T) {
 }
 
 func TestGetTransactionsInRange(t *testing.T) {
+	skipWithoutApiToken(t)
 	// Here just to test somewhere that logger is actually loaded...
 	zLog, err := logger.GetZapDevelopmentLogger(zap.NewAtomicLevelAt(zap.DebugLevel))
 	require.NoError(t, err)
@@ -130,7 +132,7 @@ func TestGetTransactionsInRange(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},
@@ -195,6 +197,7 @@ func TestGetTransactionsInRange(t *testing.T) {
 }
 
 func TestGetLogsInRange(t *testing.T) {
+	skipWithoutApiToken(t)
 	// Here just to test somewhere that logger is actually loaded...
 	zLog, err := logger.GetZapDevelopmentLogger(zap.NewAtomicLevelAt(zap.DebugLevel))
 	require.NoError(t, err)
@@ -226,7 +229,7 @@ func TestGetLogsInRange(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},
@@ -307,6 +310,7 @@ func TestGetLogsInRange(t *testing.T) {
 }
 
 func TestGetTracesInRange(t *testing.T) {
+	skipWithoutApiToken(t)
 	// Here just to test somewhere that logger is actually loaded...
 	zLog, err := logger.GetZapDevelopmentLogger(zap.NewAtomicLevelAt(zap.DebugLevel))
 	require.NoError(t, err)
@@ -333,7 +337,7 @@ func TestGetTracesInRange(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},

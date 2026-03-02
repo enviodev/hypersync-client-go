@@ -2,20 +2,22 @@ package hypersyncgo
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"io"
+	"math/big"
+	"net"
+	"net/http"
+	"strings"
+	"time"
+
 	arrowhs "github.com/enviodev/hypersync-client-go/arrow"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/pkg/errors"
-	"io"
-	"math/rand"
-	"net"
-	"net/http"
-	"strings"
-	"time"
 )
 
 type Client struct {
@@ -26,15 +28,15 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
-	if opts.BearerToken == nil || *opts.BearerToken == "" {
-		return nil, errors.New("bearer token is mandatory as of ")
+	if err := opts.Validate(); err != nil {
+		return nil, errors.Wrap(err, "invalid node options")
 	}
 
-	rpc, err := rpc.DialOptions(ctx, opts.RpcEndpoint, rpc.WithHeader("Authorization", "Bearer "+*opts.BearerToken))
+	rpcConn, err := rpc.DialOptions(ctx, opts.RpcEndpoint, rpc.WithHeader("Authorization", "Bearer "+opts.ApiToken))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to RPC client")
 	}
-	client := ethclient.NewClient(rpc)
+	rpcClient := ethclient.NewClient(rpcConn)
 
 	return &Client{
 		ctx:  ctx,
@@ -52,12 +54,30 @@ func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 				ExpectContinueTimeout: 1 * time.Second,
 			},
 		},
-		rpcClient: client,
+		rpcClient: rpcClient,
 	}, nil
 }
 
 func (c *Client) GetRPC() *ethclient.Client {
 	return c.rpcClient
+}
+
+// retryJitter returns a random duration in [0, max) using crypto/rand for use in retry backoff.
+func retryJitter(max time.Duration) time.Duration {
+	if max <= 0 {
+		return 0
+	}
+	n, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
+	if err != nil {
+		return 0
+	}
+	return time.Duration(n.Int64())
+}
+
+// setHeaders sets common headers on the request (API token is sent as Authorization: Bearer).
+func (c *Client) setHeaders(req *http.Request) {
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+c.opts.ApiToken)
 }
 
 func (c *Client) GetQueryUrlFromNode(node options.Node) string {
@@ -67,20 +87,6 @@ func (c *Client) GetQueryUrlFromNode(node options.Node) string {
 func (c *Client) GeUrlFromNodeAndPath(node options.Node, path ...string) string {
 	paths := append([]string{node.Endpoint}, path...)
 	return strings.Join(paths, "/")
-}
-
-func (c *Client) NewRequest(ctx context.Context, method, url string, reqPayload []byte) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create new request")
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	if c.opts.BearerToken != nil && *c.opts.BearerToken != "" {
-		req.Header.Set("Authorization", "Bearer "+*c.opts.BearerToken)
-	}
-
-	return req, nil
 }
 
 func (c *Client) Stream(ctx context.Context, query *types.Query, opts *options.StreamOptions) (*Stream, error) {
@@ -116,7 +122,7 @@ func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.Query
 
 		baseMs := base * time.Millisecond
 
-		jitter := time.Duration(rand.Int63n(int64(c.opts.RetryBackoffMs))) * time.Millisecond
+		jitter := retryJitter(c.opts.RetryBackoffMs)
 
 		select {
 		case <-time.After(baseMs + jitter):
@@ -137,10 +143,12 @@ func DoQuery[R any, T any](ctx context.Context, c *Client, method string, payloa
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := c.NewRequest(ctx, method, nodeUrl, reqPayload)
+	req, err := http.NewRequestWithContext(ctx, method, nodeUrl, strings.NewReader(string(reqPayload)))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
+
+	c.setHeaders(req)
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -172,10 +180,12 @@ func Do[R any, T any](ctx context.Context, c *Client, url string, method string,
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := c.NewRequest(ctx, method, url, reqPayload)
+	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
+
+	c.setHeaders(req)
 
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -207,10 +217,12 @@ func DoArrow[R any](ctx context.Context, c *Client, url string, method string, p
 		return nil, errors.Wrap(err, "failed to marshal envio payload")
 	}
 
-	req, err := c.NewRequest(ctx, method, url, reqPayload)
+	req, err := http.NewRequestWithContext(ctx, method, url, strings.NewReader(string(reqPayload)))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create new request")
 	}
+
+	c.setHeaders(req)
 
 	resp, err := c.client.Do(req)
 	if err != nil {

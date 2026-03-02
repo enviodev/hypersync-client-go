@@ -3,11 +3,11 @@ package hypersyncgo
 import (
 	"context"
 	"fmt"
-	"github.com/enviodev/hypersync-client-go/types"
 	"math/big"
-	"math/rand"
 	"net/http"
 	"time"
+
+	"github.com/enviodev/hypersync-client-go/types"
 )
 
 type ArchiveHeight struct {
@@ -27,7 +27,7 @@ func (c *Client) GetHeight(ctx context.Context) (*big.Int, error) {
 		fmt.Printf("Failed to get height from server, retrying... Error: %v\n", err)
 
 		baseMs := base * time.Millisecond
-		jitter := time.Duration(rand.Int63n(int64(c.opts.RetryBackoffMs))) * time.Millisecond
+		jitter := retryJitter(c.opts.RetryBackoffMs)
 
 		select {
 		case <-time.After(baseMs + jitter):

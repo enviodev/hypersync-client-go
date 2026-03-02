@@ -2,7 +2,6 @@ package hypersyncgo
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	"github.com/enviodev/hypersync-client-go/options"
@@ -12,14 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func getEnvPtr(key string) *string {
-	if val := os.Getenv(key); val != "" {
-		return &val
-	}
-	return nil
-}
-
 func TestHyperSync(t *testing.T) {
+	skipWithoutApiToken(t)
 	testCases := []struct {
 		name      string
 		opts      options.Options
@@ -35,7 +28,7 @@ func TestHyperSync(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},

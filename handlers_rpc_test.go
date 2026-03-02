@@ -12,6 +12,7 @@ import (
 )
 
 func TestHeaderByNumber(t *testing.T) {
+	skipWithoutApiToken(t)
 	testCases := []struct {
 		name         string
 		opts         options.Options
@@ -26,7 +27,7 @@ func TestHeaderByNumber(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},
@@ -57,6 +58,7 @@ func TestHeaderByNumber(t *testing.T) {
 }
 
 func TestBlockByNumber(t *testing.T) {
+	skipWithoutApiToken(t)
 	testCases := []struct {
 		name         string
 		opts         options.Options
@@ -71,7 +73,7 @@ func TestBlockByNumber(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},

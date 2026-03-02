@@ -12,6 +12,7 @@ import (
 )
 
 func TestGetContractCreatorByNumber(t *testing.T) {
+	skipWithoutApiToken(t)
 	testCases := []struct {
 		name  string
 		opts  options.Options
@@ -30,7 +31,7 @@ func TestGetContractCreatorByNumber(t *testing.T) {
 					NetworkId:   utils.EthereumNetworkID,
 					Endpoint:    "https://eth.hypersync.xyz",
 					RpcEndpoint: "https://eth.rpc.hypersync.xyz",
-					BearerToken: getEnvPtr("HYPERSYNC_BEARER_TOKEN"),
+					ApiToken:    getTestApiToken(),
 				},
 			},
 		},

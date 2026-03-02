@@ -142,3 +142,4 @@ fabric.properties
 examples/blocks_in_range
 examples/examples
 examples/range
+.env
