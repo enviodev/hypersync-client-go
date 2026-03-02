@@ -2,20 +2,22 @@ package hypersyncgo
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
+	"io"
+	"math/big"
+	"net"
+	"net/http"
+	"strings"
+	"time"
+
 	arrowhs "github.com/enviodev/hypersync-client-go/arrow"
 	"github.com/enviodev/hypersync-client-go/options"
 	"github.com/enviodev/hypersync-client-go/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/pkg/errors"
-	"io"
-	"math/rand"
-	"net"
-	"net/http"
-	"strings"
-	"time"
 )
 
 type Client struct {
@@ -58,6 +60,18 @@ func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 
 func (c *Client) GetRPC() *ethclient.Client {
 	return c.rpcClient
+}
+
+// retryJitter returns a random duration in [0, max) using crypto/rand for use in retry backoff.
+func retryJitter(max time.Duration) time.Duration {
+	if max <= 0 {
+		return 0
+	}
+	n, err := rand.Int(rand.Reader, big.NewInt(int64(max)))
+	if err != nil {
+		return 0
+	}
+	return time.Duration(n.Int64())
 }
 
 // setHeaders sets common headers on the request (API token is sent as Authorization: Bearer).
@@ -108,7 +122,7 @@ func (c *Client) GetArrow(ctx context.Context, query *types.Query) (*types.Query
 
 		baseMs := base * time.Millisecond
 
-		jitter := time.Duration(rand.Int63n(int64(c.opts.RetryBackoffMs))) * time.Millisecond
+		jitter := retryJitter(c.opts.RetryBackoffMs)
 
 		select {
 		case <-time.After(baseMs + jitter):

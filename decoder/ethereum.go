@@ -180,5 +180,8 @@ func adjustIntSize(integer *big.Int, size int) *big.Int {
 	if size == 256 || integer.Bit(size-1) == 0 {
 		return integer
 	}
+	if size <= 0 || size > 256 {
+		return integer
+	}
 	return new(big.Int).Sub(integer, new(big.Int).Lsh(big.NewInt(1), uint(size)))
 }

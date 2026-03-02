@@ -128,7 +128,9 @@ func (s *Stream) Subscribe() error {
 
 // Unsubscribe stops the stream and closes all channels associated with it.
 func (s *Stream) Unsubscribe() error {
-	s.worker.Stop()
+	if err := s.worker.Stop(); err != nil {
+		return err
+	}
 	close(s.queryCh)
 	close(s.ch)
 	close(s.errCh)

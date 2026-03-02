@@ -2,6 +2,8 @@ package options
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/enviodev/hypersync-client-go/utils"
 	"go.uber.org/zap/zapcore"
 	"time"
@@ -89,7 +91,11 @@ func (n *Node) GetType() utils.Network {
 }
 
 // GetNetworkID returns the network ID of the node.
+// Values larger than math.MaxInt64 are clamped to math.MaxInt64 to avoid integer overflow.
 func (n *Node) GetNetworkID() int64 {
+	if n.NetworkId > math.MaxInt64 {
+		return math.MaxInt64
+	}
 	return int64(n.NetworkId)
 }
 
