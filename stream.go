@@ -89,6 +89,11 @@ func (s *Stream) Subscribe() error {
 		return nil
 	}
 
+	// Create a new iterator starting from the NextBlock to avoid duplicate processing
+	nextBlockValue := response.NextBlock.Uint64()
+	step := s.opts.BatchSize.Uint64() | (uint64(0) << 32)
+	s.iterator = streams.NewBlockIterator(nextBlockValue, s.query.ToBlock.Uint64(), &step)
+
 	// Start the worker to fetch remaining pages
 	g.Go(func() error {
 		return s.worker.Start(s.ProcessNextQuery, s.queryCh)
