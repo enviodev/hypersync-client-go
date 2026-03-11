@@ -25,9 +25,22 @@ type Client struct {
 	opts      options.Node
 	client    *http.Client
 	rpcClient *ethclient.Client
+	userAgent string
 }
 
 func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
+	// hscg stands for hypersync client go
+	userAgent := fmt.Sprintf("hscg/%s", Version)
+	return newClient(ctx, opts, userAgent)
+}
+
+// NewClientWithUserAgent creates a new Client with a custom user agent string.
+// This is intended for use by other libraries built on top of hypersync-client-go.
+func NewClientWithUserAgent(ctx context.Context, opts options.Node, userAgent string) (*Client, error) {
+	return newClient(ctx, opts, userAgent)
+}
+
+func newClient(ctx context.Context, opts options.Node, userAgent string) (*Client, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, errors.Wrap(err, "invalid node options")
 	}
@@ -55,6 +68,7 @@ func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 			},
 		},
 		rpcClient: rpcClient,
+		userAgent: userAgent,
 	}, nil
 }
 
@@ -78,6 +92,7 @@ func retryJitter(max time.Duration) time.Duration {
 func (c *Client) setHeaders(req *http.Request) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.opts.ApiToken)
+	req.Header.Set("User-Agent", c.userAgent)
 }
 
 func (c *Client) GetQueryUrlFromNode(node options.Node) string {
