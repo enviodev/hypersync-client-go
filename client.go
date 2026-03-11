@@ -29,18 +29,6 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
-	// hscg stands for hypersync client go
-	userAgent := fmt.Sprintf("hscg/%s", Version)
-	return newClient(ctx, opts, userAgent)
-}
-
-// NewClientWithUserAgent creates a new Client with a custom user agent string.
-// This is intended for use by other libraries built on top of hypersync-client-go.
-func NewClientWithUserAgent(ctx context.Context, opts options.Node, userAgent string) (*Client, error) {
-	return newClient(ctx, opts, userAgent)
-}
-
-func newClient(ctx context.Context, opts options.Node, userAgent string) (*Client, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, errors.Wrap(err, "invalid node options")
 	}
@@ -68,7 +56,7 @@ func newClient(ctx context.Context, opts options.Node, userAgent string) (*Clien
 			},
 		},
 		rpcClient: rpcClient,
-		userAgent: userAgent,
+		userAgent: fmt.Sprintf("hscg/%s", Version),
 	}, nil
 }
 
