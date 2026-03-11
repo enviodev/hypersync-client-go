@@ -56,7 +56,7 @@ func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 			},
 		},
 		rpcClient: rpcClient,
-		userAgent: fmt.Sprintf("hscg/%s", Version),
+		userAgent: fmt.Sprintf("hscg/%s", version()),
 	}, nil
 }
 
