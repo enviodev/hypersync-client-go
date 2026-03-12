@@ -25,6 +25,7 @@ type Client struct {
 	opts      options.Node
 	client    *http.Client
 	rpcClient *ethclient.Client
+	userAgent string
 }
 
 func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
@@ -55,6 +56,7 @@ func NewClient(ctx context.Context, opts options.Node) (*Client, error) {
 			},
 		},
 		rpcClient: rpcClient,
+		userAgent: fmt.Sprintf("hscg/%s", version()),
 	}, nil
 }
 
@@ -78,6 +80,7 @@ func retryJitter(max time.Duration) time.Duration {
 func (c *Client) setHeaders(req *http.Request) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+c.opts.ApiToken)
+	req.Header.Set("User-Agent", c.userAgent)
 }
 
 func (c *Client) GetQueryUrlFromNode(node options.Node) string {
