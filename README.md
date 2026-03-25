@@ -1,6 +1,6 @@
 # hypersync-client-go
 
-[![Tests Status](https://github.com/enviodev/hypersync-client-go/actions/workflows/test.yml/badge.svg)](https://github.com/enviodev/hypersync-client-go/actions/workflows/test.yml) [![Security Status](https://github.com/enviodev/hypersync-client-go/actions/workflows/gosec.yml/badge.svg)](https://github.com/enviodev/hypersync-client-go/actions/workflows/gosec.yml) [![Coverage Status](https://coveralls.io/repos/github/enviodev/hypersync-client-go/badge.svg?branch=main)](https://coveralls.io/github/enviodev/hypersync-client-go?branch=main) [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-7289da?logo=discord&logoColor=white)](https://discord.gg/Q9qt8gZ2fX)
+[![Tests Status](https://github.com/enviodev/hypersync-client-go/actions/workflows/test.yml/badge.svg)](https://github.com/enviodev/hypersync-client-go/actions/workflows/test.yml) [![Security Status](https://github.com/enviodev/hypersync-client-go/actions/workflows/gosec.yml/badge.svg)](https://github.com/enviodev/hypersync-client-go/actions/workflows/gosec.yml) [![Coverage Status](https://coveralls.io/repos/github/enviodev/hypersync-client-go/badge.svg?branch=main)](https://coveralls.io/github/enviodev/hypersync-client-go?branch=main) [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-7289da?logo=discord&logoColor=white)](https://discord.com/invite/envio)
 
 Go client for [Envio's](https://envio.dev) HyperSync. Provides a native Go interface for accessing HyperSync, HyperRPC, and HyperCURL.
 
@@ -128,6 +128,6 @@ This client is community maintained and marked as work-in-progress. Test thoroug
 
 ## Support
 
-- [Discord community](https://discord.gg/Q9qt8gZ2fX)
+- [Discord community](https://discord.com/invite/envio)
 - [GitHub Issues](https://github.com/enviodev/hypersync-client-go/issues)
 - [Documentation](https://docs.envio.dev/docs/HyperSync/overview)
