@@ -12,6 +12,8 @@ Go client for [Envio's](https://envio.dev) HyperSync. Provides a native Go inter
 
 HyperSync lets you query logs, transactions, blocks, and traces with flexible filtering and field selection, returning only the data you need.
 
+If you need a full indexing framework on top of HyperSync with GraphQL APIs and schema management, see [HyperIndex](https://github.com/enviodev/hyperindex).
+
 ## Features
 
 - **Native Go interface**: Idiomatic Go API for accessing HyperSync
@@ -57,22 +59,6 @@ if err != nil {
 
 See the [examples directory](./examples) for complete usage including block ranges, log queries, transaction queries, trace queries, and decoded ERC-721 events.
 
-## Running Examples
-
-```bash
-# Set your API token first
-export ENVIO_API_TOKEN="your-token-here"
-
-# Run an example
-go run ./examples/blocks_in_range.go
-go run ./examples/logs_in_range.go
-go run ./examples/transactions_in_range.go
-go run ./examples/traces_in_range.go
-go run ./examples/erc721_events_decoded.go
-```
-
-Example files use `//go:build ignore` so they are not built with the main module.
-
 ## Connecting to Different Networks
 
 Change the `Endpoint` to connect to any supported network:
@@ -93,6 +79,32 @@ node := options.Node{
 
 See the full list of [supported networks and URLs](https://docs.envio.dev/docs/HyperSync/hypersync-supported-networks).
 
+## Running Examples
+
+```bash
+# Set your API token first
+export ENVIO_API_TOKEN="your-token-here"
+
+# Run an example
+go run ./examples/blocks_in_range.go
+go run ./examples/logs_in_range.go
+go run ./examples/transactions_in_range.go
+go run ./examples/traces_in_range.go
+go run ./examples/erc721_events_decoded.go
+```
+
+Example files use `//go:build ignore` so they are not built with the main module.
+
+## What you can build
+
+The Go client is a good fit for teams building blockchain tooling in Go that need fast, direct access to on-chain data:
+
+- **Blockchain data pipelines**: Query logs, transactions, blocks, and traces at scale without RPC bottlenecks
+- **Block explorers**: Power responsive interfaces with real-time data access across 70+ chains
+- **Monitoring tools**: Track wallet activity and contract events in near real-time
+- **Analytics tools**: Scan entire chain histories in seconds instead of hours
+- **Go-native integrations**: Access HyperSync and HyperRPC from existing Go services without switching language
+
 ## Testing
 
 ```bash
@@ -108,6 +120,7 @@ Unit tests that do not call the real API work without a token. Tests that call H
 ## Documentation
 
 - [HyperSync Documentation](https://docs.envio.dev/docs/HyperSync/overview)
+- [HyperRPC Documentation](https://docs.envio.dev/docs/HyperSync/overview-hyperrpc)
 - [All Client Libraries](https://docs.envio.dev/docs/HyperSync/hypersync-clients) (Node.js, Python, Rust)
 - [Query Reference](https://docs.envio.dev/docs/HyperSync/hypersync-query)
 - [Supported Networks](https://docs.envio.dev/docs/HyperSync/hypersync-supported-networks)
@@ -125,6 +138,12 @@ Yes. The token must be set on each `options.Node` as `ApiToken`. [Get one here](
 
 **Is this production ready?**
 This client is community maintained and marked as work-in-progress. Test thoroughly before using in production. The officially supported clients are [Node.js](https://github.com/enviodev/hypersync-client-node), [Python](https://github.com/enviodev/hypersync-client-python), and [Rust](https://github.com/enviodev/hypersync-client-rust).
+
+**What is HyperRPC?**
+HyperRPC is Envio's fast read-only RPC endpoint designed for data-intensive tasks. It is a drop-in JSON-RPC compatible alternative to traditional nodes. Behind the scenes, HyperRPC uses HyperSync to fulfill requests. For most use cases Envio recommends using HyperSync directly, as it provides greater speed and query flexibility. [HyperRPC docs →](https://docs.envio.dev/docs/HyperSync/overview-hyperrpc)
+
+**What is the difference between HyperSync and HyperIndex?**
+HyperSync is the raw data access layer. Use it when you need direct access to blockchain data in your own pipeline. [HyperIndex](https://github.com/enviodev/hyperindex) is the full indexing framework built on top of HyperSync, with schema management, event handlers, and a GraphQL API.
 
 ## Support
 
