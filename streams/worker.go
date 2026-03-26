@@ -85,7 +85,6 @@ func (w *Worker[T, R]) Start(workerFn WorkerFn[T, R], descriptor <-chan T) error
 					if !ok {
 						return nil
 					}
-
 					w.wg.Add(1)
 					resp, err := workerFn(entry.value)
 					w.result <- OrderedResult[T, R]{index: entry.index, record: resp, err: err}
